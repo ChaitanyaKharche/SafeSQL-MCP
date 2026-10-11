@@ -78,6 +78,36 @@ jobs:
           name: safety-report
           path: ci-reports/
 
+  docker:
+    name: Docker stack smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start postgres, setup, mcp, jaeger
+        run: docker compose up -d --build --wait --wait-timeout 300 mcp
+      - name: Health check and a guarded query over MCP
+        run: |
+          curl -sf http://localhost:8000/healthz
+          pip install "mcp>=2.3,<3"
+          python - <<'EOF'
+          import asyncio, json
+          from mcp import Client
+
+          async def main():
+              async with Client("http://localhost:8000/mcp") as c:
+                  ok = await c.call_tool("run_query", {"sql": "SELECT count(*) AS n FROM singer"})
+                  bad = await c.call_tool("run_query", {"sql": "DROP TABLE singer"})
+                  ok, bad = ok.structured_content, bad.structured_content
+                  print(json.dumps(ok), json.dumps(bad))
+                  assert ok["ok"] and ok["rows"][0][0] > 0
+                  assert bad["ok"] is False and bad["error"]["code"] == "statement_not_allowed"
+
+          asyncio.run(main())
+          EOF
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+
   llm-gate:
     name: LLM accuracy + agent safety gate
     runs-on: ubuntu-latest

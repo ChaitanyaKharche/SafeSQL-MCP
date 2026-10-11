@@ -135,6 +135,24 @@ Claude Desktop / Cursor (`mcpServers` in the client's config):
 
 Or point any streamable-HTTP client at `http://localhost:8000/mcp` from the compose stack.
 
+### Deploy a public demo
+
+The server only ever holds read-only credentials, so a public read-only endpoint is a reasonable thing to expose. Any container host works; with [Fly.io](https://fly.io):
+
+```bash
+# 1. Provision any Postgres 17 once, from your machine, with an admin DSN
+SAFESQL_ADMIN_URL=postgresql://admin:...@host/safesql SAFESQL_READER_PASSWORD=... \
+  safesql setup-db --load evals/fixtures/spider_dev.sql.gz
+# 2. Deploy the image with only the reader DSN
+fly launch --no-deploy
+fly secrets set SAFESQL_DATABASE_URL=postgresql://safesql_reader:...@host/safesql \
+  SAFESQL_SCHEMAS=spider_world_1 SAFESQL_ALLOWED_HOSTS=<app>.fly.dev
+fly deploy
+# MCP endpoint: https://<app>.fly.dev/mcp
+```
+
+On managed Postgres (RDS, Neon, Supabase) the admin role usually can't revoke `pg_catalog` functions; `setup-db` warns and carries on, and the guard still blocks those functions.
+
 ## Configuration
 
 | Variable | Default | Meaning |

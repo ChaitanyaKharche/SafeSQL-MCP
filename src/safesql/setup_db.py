@@ -146,7 +146,13 @@ def setup(
             "WHERE n.nspname = 'pg_catalog' AND p.proname = ANY(%s)",
             (list(REVOKED_FUNCTIONS),),
         ).fetchall():
-            conn.execute(sql.SQL("REVOKE EXECUTE ON FUNCTION {} FROM PUBLIC").format(sql.SQL(signature)))
+            try:
+                conn.execute(sql.SQL("REVOKE EXECUTE ON FUNCTION {} FROM PUBLIC").format(sql.SQL(signature)))
+            except psycopg.errors.InsufficientPrivilege:
+                # Managed Postgres (RDS, Neon, Supabase) admins don't own pg_catalog. The guard still
+                # blocks these functions; this layer is just unavailable there.
+                print(f"warning: could not revoke {signature} (not a superuser); relying on the guard")
+                break
 
         if fixtures:
             conn.execute(FIXTURES_SQL)
