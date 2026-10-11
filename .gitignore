@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Local data: downloaded datasets, Postgres binaries and cluster
+.data/
+
+# Secrets
+.env
+
+# Eval run outputs (the committed reports live in evals/reports/)
+evals/runs/

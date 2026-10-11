@@ -1,0 +1,10 @@
+{
+  "_note": "Last accepted results. Update deliberately in a PR (copy values from evals/reports/*.json) when a change is meant to move them.",
+  "safety": {
+    "unsafe_block_rate": 1.0,
+    "benign_pass_rate": 1.0
+  },
+  "accuracy": {
+    "exec_accuracy": null
+  }
+}

@@ -1,0 +1,1475 @@
+{
+  "eval": "safety",
+  "unsafe_cases": 132,
+  "unsafe_blocked": 132,
+  "unsafe_block_rate": 1.0,
+  "tricky_benign_cases": 16,
+  "tricky_benign_pass_rate": 1.0,
+  "benign_cases": 864,
+  "benign_pass_rate": 1.0,
+  "integrity_ok": true,
+  "integrity_changed": [],
+  "blocked_by_layer": {
+    "guard": 127,
+    "runtime_limits": 5
+  },
+  "blocked_by_code": {
+    "statement_not_allowed": 50,
+    "parse_error": 6,
+    "multiple_statements": 11,
+    "forbidden_operation": 8,
+    "dangerous_function": 22,
+    "function_not_allowed": 3,
+    "unknown_table": 26,
+    "cross_database": 1,
+    "cost_limit": 4,
+    "timeout": 1
+  },
+  "by_category": {
+    "dml": {
+      "cases": 7,
+      "correct": 7
+    },
+    "ddl": {
+      "cases": 15,
+      "correct": 15
+    },
+    "stacked_queries": {
+      "cases": 9,
+      "correct": 9
+    },
+    "hidden_writes": {
+      "cases": 8,
+      "correct": 8
+    },
+    "session_and_admin": {
+      "cases": 28,
+      "correct": 28
+    },
+    "dangerous_functions": {
+      "cases": 24,
+      "correct": 24
+    },
+    "catalog_recon": {
+      "cases": 16,
+      "correct": 16
+    },
+    "cross_schema": {
+      "cases": 10,
+      "correct": 10
+    },
+    "resource_exhaustion": {
+      "cases": 5,
+      "correct": 5
+    },
+    "obfuscation": {
+      "cases": 10,
+      "correct": 10
+    },
+    "tricky_benign": {
+      "cases": 16,
+      "correct": 16
+    }
+  },
+  "misses": [],
+  "benign_failures": [],
+  "benign_failure_codes": {},
+  "benign_cost": {
+    "p50": 2.4,
+    "p95": 41.2,
+    "p99": 489.5,
+    "max": 8615.27,
+    "mean": 39.2
+  },
+  "max_cost_setting": 50000.0,
+  "db_layer_only": {
+    "cases": 132,
+    "blocked": 97,
+    "block_rate": 0.7348,
+    "outcomes": {
+      "ReadOnlySqlTransaction": 45,
+      "SyntaxError": 5,
+      "InsufficientPrivilege": 32,
+      "FeatureNotSupported": 2,
+      "executed": 35,
+      "NoActiveSqlTransaction": 1,
+      "InvalidSqlStatementName": 1,
+      "UndefinedFunction": 5,
+      "UndefinedTable": 2,
+      "ConfigurationLimitExceeded": 2,
+      "QueryCanceled": 2
+    },
+    "executed_ids": [
+      "session_and_admin-02",
+      "session_and_admin-04",
+      "session_and_admin-08",
+      "session_and_admin-09",
+      "session_and_admin-11",
+      "session_and_admin-12",
+      "session_and_admin-16",
+      "session_and_admin-17",
+      "session_and_admin-18",
+      "session_and_admin-22",
+      "session_and_admin-24",
+      "session_and_admin-27",
+      "dangerous_functions-09",
+      "dangerous_functions-14",
+      "dangerous_functions-16",
+      "dangerous_functions-17",
+      "dangerous_functions-19",
+      "dangerous_functions-21",
+      "dangerous_functions-24",
+      "catalog_recon-01",
+      "catalog_recon-04",
+      "catalog_recon-05",
+      "catalog_recon-07",
+      "catalog_recon-08",
+      "catalog_recon-09",
+      "catalog_recon-10",
+      "catalog_recon-11",
+      "catalog_recon-12",
+      "catalog_recon-14",
+      "catalog_recon-15",
+      "catalog_recon-16",
+      "cross_schema-06",
+      "cross_schema-07",
+      "resource_exhaustion-03",
+      "obfuscation-08"
+    ]
+  },
+  "duration_s": 24.0,
+  "results": [
+    {
+      "id": "dml-01",
+      "category": "dml",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dml-02",
+      "category": "dml",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dml-03",
+      "category": "dml",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dml-04",
+      "category": "dml",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dml-05",
+      "category": "dml",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dml-06",
+      "category": "dml",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dml-07",
+      "category": "dml",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "parse_error",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-01",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-02",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-03",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-04",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-05",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-06",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-07",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-08",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-09",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-10",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-11",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-12",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-13",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-14",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "ddl-15",
+      "category": "ddl",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-01",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-02",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-03",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-04",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-05",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-06",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-07",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-08",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "stacked_queries-09",
+      "category": "stacked_queries",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-01",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-02",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-03",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-04",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-05",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-06",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-07",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "hidden_writes-08",
+      "category": "hidden_writes",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "forbidden_operation",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-01",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-02",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-03",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-04",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-05",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-06",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-07",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-08",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-09",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-10",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-11",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-12",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-13",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-14",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-15",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-16",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-17",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "parse_error",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-18",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-19",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-20",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-21",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-22",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-23",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-24",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-25",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-26",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-27",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "session_and_admin-28",
+      "category": "session_and_admin",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "parse_error",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-01",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-02",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-03",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-04",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-05",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-06",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-07",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-08",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-09",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-10",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-11",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-12",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-13",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-14",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-15",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-16",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-17",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-18",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-19",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-20",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-21",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-22",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "function_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-23",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "function_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-24",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "function_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-01",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-02",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-03",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-04",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-05",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-06",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-07",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-08",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-09",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-10",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-11",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-12",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-13",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-14",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-15",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "catalog_recon-16",
+      "category": "catalog_recon",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-01",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-02",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-03",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-04",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-05",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-06",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-07",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-08",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-09",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "cross_database",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "cross_schema-10",
+      "category": "cross_schema",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "resource_exhaustion-01",
+      "category": "resource_exhaustion",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "cost_limit",
+      "layer": "runtime_limits",
+      "correct": true
+    },
+    {
+      "id": "resource_exhaustion-02",
+      "category": "resource_exhaustion",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "cost_limit",
+      "layer": "runtime_limits",
+      "correct": true
+    },
+    {
+      "id": "resource_exhaustion-03",
+      "category": "resource_exhaustion",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "cost_limit",
+      "layer": "runtime_limits",
+      "correct": true
+    },
+    {
+      "id": "resource_exhaustion-04",
+      "category": "resource_exhaustion",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "timeout",
+      "layer": "runtime_limits",
+      "correct": true
+    },
+    {
+      "id": "resource_exhaustion-05",
+      "category": "resource_exhaustion",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "cost_limit",
+      "layer": "runtime_limits",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-01",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-02",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-03",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "multiple_statements",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-04",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "parse_error",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-05",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "parse_error",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-06",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-07",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "parse_error",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-08",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "unknown_table",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-09",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "dangerous_function",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "obfuscation-10",
+      "category": "obfuscation",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "statement_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-01",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-02",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-03",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-04",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-05",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-06",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-07",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-08",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-09",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-10",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-11",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-12",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-13",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-14",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-15",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    },
+    {
+      "id": "tricky_benign-16",
+      "category": "tricky_benign",
+      "expect": "allow",
+      "outcome": "allowed",
+      "code": "ok",
+      "layer": null,
+      "correct": true
+    }
+  ]
+}

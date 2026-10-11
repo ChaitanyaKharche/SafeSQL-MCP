@@ -1,0 +1,55 @@
+# Local stack: Postgres + one-shot provisioning + the MCP server + Jaeger for traces.
+#   docker compose up --build
+#   MCP endpoint:  http://localhost:8000/mcp     Traces: http://localhost:16686
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: safesql
+      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d safesql"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Runs once with the admin credentials, then exits. The server below never sees them.
+  setup:
+    build: .
+    command: ["safesql", "setup-db", "--load", "evals/fixtures/spider_dev.sql.gz"]
+    environment:
+      SAFESQL_ADMIN_URL: postgresql://postgres:postgres@postgres:5432/safesql
+      SAFESQL_READER_PASSWORD: ${SAFESQL_READER_PASSWORD:-reader-dev-pw}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  mcp:
+    build: .
+    environment:
+      SAFESQL_DATABASE_URL: postgresql://safesql_reader:${SAFESQL_READER_PASSWORD:-reader-dev-pw}@postgres:5432/safesql
+      SAFESQL_SCHEMAS: ${SAFESQL_SCHEMAS:-spider_concert_singer}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_SERVICE_NAME: safesql-mcp
+    ports:
+      - "8000:8000"
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      jaeger:
+        condition: service_started
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+
+volumes:
+  pgdata:

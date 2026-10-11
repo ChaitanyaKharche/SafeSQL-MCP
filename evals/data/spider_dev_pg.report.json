@@ -1,0 +1,33 @@
+{
+  "split": "dev",
+  "source_examples": 1034,
+  "kept": 864,
+  "dropped": {
+    "result_mismatch": 55,
+    "empty_result": 43,
+    "postgres_error": 72
+  },
+  "databases": 20,
+  "kept_per_database": {
+    "concert_singer": 36,
+    "pets_1": 40,
+    "car_1": 84,
+    "flight_2": 46,
+    "employee_hire_evaluation": 28,
+    "cre_Doc_Template_Mgt": 72,
+    "course_teach": 24,
+    "museum_visit": 15,
+    "wta_1": 42,
+    "battle_death": 15,
+    "student_transcripts_tracking": 67,
+    "tvshow": 52,
+    "poker_player": 40,
+    "voter_1": 14,
+    "world_1": 112,
+    "orchestra": 28,
+    "network_1": 40,
+    "dog_kennels": 76,
+    "singer": 30,
+    "real_estate_properties": 3
+  }
+}

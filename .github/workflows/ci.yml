@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      accuracy_limit:
+        description: "Questions to sample for the accuracy eval (0 = all 864)"
+        default: "40"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SAFESQL_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/safesql
+  SAFESQL_READER_PASSWORD: ci-reader-pw
+  SAFESQL_DATABASE_URL: postgresql://safesql_reader:ci-reader-pw@localhost:5432/safesql
+
+jobs:
+  test:
+    name: Lint + tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_INITDB_ARGS: --locale=C --encoding=UTF8
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 3s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - name: Lint
+        run: |
+          ruff check src tests
+          ruff format --check src tests
+      - name: Provision database (Spider fixture, read-only role, injection fixtures)
+        run: safesql setup-db --load evals/fixtures/spider_dev.sql.gz
+      - name: Unit + integration tests
+        run: pytest -q
+
+  safety-gate:
+    name: Safety eval gate
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_INITDB_ARGS: --locale=C --encoding=UTF8
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 3s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - run: safesql setup-db --load evals/fixtures/spider_dev.sql.gz
+      - name: Safety eval (132 attacks, 864 benign golden queries, integrity check)
+        run: safesql eval safety --out ci-reports/safety.json
+      - name: Gate
+        run: safesql eval gate --reports ci-reports --require safety
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: safety-report
+          path: ci-reports/
+
+  llm-gate:
+    name: LLM accuracy + agent safety gate
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SAFESQL_MODEL: ${{ vars.SAFESQL_MODEL || 'claude-opus-5-5' }}
+      SAFESQL_EFFORT: ${{ vars.SAFESQL_EFFORT || 'medium' }}
+      ACCURACY_LIMIT: ${{ inputs.accuracy_limit || vars.ACCURACY_LIMIT || '40' }}
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_INITDB_ARGS: --locale=C --encoding=UTF8
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 3s --health-timeout 3s --health-retries 20
+    steps:
+      - name: Check for API key
+        id: key
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::ANTHROPIC_API_KEY is not set (or this is a fork PR); skipping LLM evals."
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.key.outputs.available == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.key.outputs.available == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+      - if: steps.key.outputs.available == 'true'
+        run: |
+          pip install -e .
+          safesql setup-db --load evals/fixtures/spider_dev.sql.gz
+      - name: Accuracy eval
+        if: steps.key.outputs.available == 'true'
+        run: safesql eval accuracy --limit "$ACCURACY_LIMIT" --out ci-reports/accuracy.json
+      - name: Agent safety eval
+        if: steps.key.outputs.available == 'true'
+        run: safesql eval agent-safety --out ci-reports/agent_safety.json
+      - name: Gate
+        if: steps.key.outputs.available == 'true'
+        run: safesql eval gate --reports ci-reports --require accuracy agent_safety
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.key.outputs.available == 'true'
+        with:
+          name: llm-eval-reports
+          path: ci-reports/

