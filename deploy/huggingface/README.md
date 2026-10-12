@@ -18,7 +18,7 @@ read-only role. On this page you can type any SQL, or fire one of the 132 attack
 CI suite, and see which layer stops it.
 
 - **Playground:** the page above. It runs your SQL through the same guard as the MCP tools.
-- **MCP endpoint:** `https://<this-space>.hf.space/mcp` (streamable HTTP). Connect Claude Code,
+- **MCP endpoint:** `https://ckharche-safesql.hf.space/mcp` (streamable HTTP). Connect Claude Code,
   Claude Desktop or Cursor and ask questions about the Spider `world_1` database.
 - **Source, evals and CI gate:** https://github.com/ChaitanyaKharche/SafeSQL-MCP
 

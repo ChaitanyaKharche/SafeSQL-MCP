@@ -4,7 +4,9 @@
 
 Any MCP client (Claude Desktop, Claude Code, Cursor, or the agent in this repo) can ask questions of a Postgres database in plain English. Every query the model writes is parsed into a syntax tree, checked against allowlists, rewritten with a row limit, cost-checked with `EXPLAIN`, and run in a read-only transaction under a read-only role with a timeout. A deterministic eval suite throws 132 attacks at it in CI and blocks the merge if a single one gets through.
 
-![CI](https://github.com/ChaitanyaKharche/SafeSQL-MCP/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/ChaitanyaKharche/SafeSQL-MCP/actions/workflows/ci.yml/badge.svg) [![Live demo on Hugging Face Spaces](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)](https://huggingface.co/spaces/ckharche/SafeSQL)
+
+**Live demo: [huggingface.co/spaces/ckharche/SafeSQL](https://huggingface.co/spaces/ckharche/SafeSQL)**. Try to break it in the browser, or point an MCP client at `https://ckharche-safesql.hf.space/mcp`.
 
 | Safety eval (deterministic, runs on every PR) | Result |
 |---|---|
@@ -32,7 +34,7 @@ Reports: [`accuracy.md`](evals/reports/accuracy.md), [`agent_safety.md`](evals/r
 
 If `ANTHROPIC_API_KEY` is set, an **Ask in English** tab runs the agent and shows each tool call. A per-visitor limit (10 questions an hour) and a global daily cap (`SAFESQL_DEMO_ASK_DAILY_LIMIT`, default 50) bound what a public page can spend: at ~$0.0005 a question, the cap works out to at most about $0.75 a month.
 
-Run it locally with `docker compose up --build` (playground at `http://localhost:8000`) or deploy it as a free Hugging Face Space, as described in [Deploy a public demo](#deploy-a-public-demo).
+It's live at **[huggingface.co/spaces/ckharche/SafeSQL](https://huggingface.co/spaces/ckharche/SafeSQL)**. Run it locally with `docker compose up --build` (playground at `http://localhost:8000`), or deploy your own copy as a free Hugging Face Space, as described in [Deploy a public demo](#deploy-a-public-demo).
 
 ---
 
@@ -138,6 +140,14 @@ ANTHROPIC_API_KEY=... safesql ask "How many concerts were held in 2014?" --schem
 
 ### Use it from an MCP client
 
+The live demo's endpoint is public and read-only, so you can try it without installing anything. It serves the Spider `world_1` database (countries, cities, languages):
+
+```bash
+claude mcp add --transport http safesql https://ckharche-safesql.hf.space/mcp
+```
+
+To run against your own database instead:
+
 Claude Code:
 
 ```bash
@@ -165,7 +175,7 @@ Or point any streamable-HTTP client at `http://localhost:8000/mcp` from the comp
 
 ### Deploy a public demo
 
-[`deploy/huggingface/`](deploy/huggingface/) is a ready Hugging Face Docker Space: one container with Postgres 17 and the server, the Spider data baked in at build time, the playground on port 7860 and MCP at `/mcp`. It runs on the free CPU Basic hardware.
+The [live demo](https://huggingface.co/spaces/ckharche/SafeSQL) runs this way. [`deploy/huggingface/`](deploy/huggingface/) is a ready Hugging Face Docker Space: one container with Postgres 17 and the server, the Spider data baked in at build time, the playground on port 7860 and MCP at `/mcp`. It runs on the free CPU Basic hardware.
 
 1. Create a Space at [huggingface.co/new-space](https://huggingface.co/new-space): SDK **Docker**, template **Blank**, hardware **CPU Basic**, no storage bucket.
 2. Upload [`deploy/huggingface/Dockerfile`](deploy/huggingface/Dockerfile) and [`deploy/huggingface/README.md`](deploy/huggingface/README.md) to the Space, replacing its README. The build clones this repo, so later changes on `main` ship with **Settings → Factory rebuild**.
