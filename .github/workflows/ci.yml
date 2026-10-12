@@ -88,6 +88,7 @@ jobs:
       - name: Health check and a guarded query over MCP
         run: |
           curl -sf http://localhost:8000/healthz
+          curl -sf http://localhost:8000/api/config > /dev/null
           pip install "mcp>=2.3,<3"
           python - <<'EOF'
           import asyncio, json
@@ -107,6 +108,29 @@ jobs:
       - name: Logs
         if: failure()
         run: docker compose logs
+
+  hf-space:
+    name: Hugging Face Space image
+    runs-on: ubuntu-latest
+    # The Space image clones the repo by branch name, so it can't build branches of forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (clones this branch, bakes in Postgres + Spider)
+        run: >-
+          docker build -t safesql-space
+          --build-arg REF=${{ github.head_ref || github.ref_name }}
+          deploy/huggingface
+      - name: Run and check the playground API
+        run: |
+          docker run -d --name space -p 7860:7860 safesql-space
+          for i in $(seq 1 30); do curl -sf localhost:7860/healthz && break; sleep 2; done
+          curl -sf localhost:7860/ | grep -q "try to break it"
+          curl -sf localhost:7860/api/config | python3 -c "import json,sys; d=json.load(sys.stdin); assert len(d['attacks']) == 132, d"
+          curl -sf -X POST localhost:7860/api/query -H 'content-type: application/json'             -d '{"schema":"spider_concert_singer","sql":"DROP TABLE singer"}' | grep -q statement_not_allowed
+      - name: Logs
+        if: failure()
+        run: docker logs space
 
   llm-gate:
     name: LLM accuracy + agent safety gate

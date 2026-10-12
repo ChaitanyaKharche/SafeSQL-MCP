@@ -26,6 +26,14 @@ The last row is the point of the parser layer: a read-only role alone still lets
 
 Reports: [`accuracy.md`](evals/reports/accuracy.md), [`agent_safety.md`](evals/reports/agent_safety.md).
 
+## Try to break it
+
+`safesql serve --transport http --demo` adds a web playground next to the MCP endpoint: type any SQL, or fire any of the 132 CI attacks with one click, and the page shows whether it ran, which layer stopped it, the hint the agent would get back, and the SQL that actually ran. On the poisoned-reviews database it highlights the cells that read like instructions to an AI. The playground runs on the guard alone, so it costs nothing to host.
+
+If `ANTHROPIC_API_KEY` is set, an **Ask in English** tab runs the agent and shows each tool call. A per-visitor limit (10 questions an hour) and a global daily cap (`SAFESQL_DEMO_ASK_DAILY_LIMIT`, default 50) bound what a public page can spend: at ~$0.0005 a question, the cap works out to at most about $0.75 a month.
+
+Run it locally with `docker compose up --build` (playground at `http://localhost:8000`) or deploy it as a free Hugging Face Space, as described in [Deploy a public demo](#deploy-a-public-demo).
+
 ---
 
 ## How it works
@@ -157,21 +165,13 @@ Or point any streamable-HTTP client at `http://localhost:8000/mcp` from the comp
 
 ### Deploy a public demo
 
-The server only ever holds read-only credentials, so a public read-only endpoint is a reasonable thing to expose. Any container host works; with [Fly.io](https://fly.io):
+[`deploy/huggingface/`](deploy/huggingface/) is a ready Hugging Face Docker Space: one container with Postgres 17 and the server, the Spider data baked in at build time, the playground on port 7860 and MCP at `/mcp`. It runs on the free CPU Basic hardware.
 
-```bash
-# 1. Provision any Postgres 17 once, from your machine, with an admin DSN
-SAFESQL_ADMIN_URL=postgresql://admin:...@host/safesql SAFESQL_READER_PASSWORD=... \
-  safesql setup-db --load evals/fixtures/spider_dev.sql.gz
-# 2. Deploy the image with only the reader DSN
-fly launch --no-deploy
-fly secrets set SAFESQL_DATABASE_URL=postgresql://safesql_reader:...@host/safesql \
-  SAFESQL_SCHEMAS=spider_world_1 SAFESQL_ALLOWED_HOSTS=<app>.fly.dev
-fly deploy
-# MCP endpoint: https://<app>.fly.dev/mcp
-```
+1. Create a Space at [huggingface.co/new-space](https://huggingface.co/new-space): SDK **Docker**, template **Blank**, hardware **CPU Basic**, no storage bucket.
+2. Upload [`deploy/huggingface/Dockerfile`](deploy/huggingface/Dockerfile) and [`deploy/huggingface/README.md`](deploy/huggingface/README.md) to the Space, replacing its README. The build clones this repo, so later changes on `main` ship with **Settings → Factory rebuild**.
+3. Optional: add `ANTHROPIC_API_KEY` under **Settings → Variables and secrets → New secret** to turn on Ask in English.
 
-On managed Postgres (RDS, Neon, Supabase) the admin role usually can't revoke `pg_catalog` functions; `setup-db` warns and carries on, and the guard still blocks those functions.
+The server only ever holds the read-only role's password, which is generated during the build. Any other container host works too: run the root `Dockerfile` with only `SAFESQL_DATABASE_URL` set to the reader DSN, after running `safesql setup-db --load evals/fixtures/spider_dev.sql.gz` once with an admin DSN. On managed Postgres (RDS, Neon, Supabase), where the admin role usually can't revoke `pg_catalog` functions, `setup-db` warns and carries on; the guard still blocks those functions.
 
 ## Configuration
 

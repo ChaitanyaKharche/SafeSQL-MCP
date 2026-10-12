@@ -47,6 +47,25 @@ _INJECTION_PATTERNS = [
 ]
 
 
+GUARD_CODES = frozenset(
+    {
+        "empty_query", "too_long", "invalid_characters", "parse_error", "multiple_statements",
+        "statement_not_allowed", "forbidden_operation", "dangerous_function", "function_not_allowed",
+        "unknown_table", "cross_database", "internal_rewrite_error",
+    }
+)  # fmt: skip
+RUNTIME_CODES = frozenset({"cost_limit", "timeout"})
+
+
+def layer_of(code: str) -> str:
+    """Which defense layer produced a rejection code: guard, runtime_limits or database."""
+    if code in GUARD_CODES:
+        return "guard"
+    if code in RUNTIME_CODES:
+        return "runtime_limits"
+    return "database"
+
+
 @dataclass
 class QueryLog:
     """Every run_query decision made by a service instance (used by evals and tests)."""

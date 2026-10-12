@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeSQL-MCP · try to break it</title>
+<meta name="description" content="A text-to-SQL MCP server for Postgres that an AI agent can't break. Run any SQL or fire one of 132 attacks and see which layer stops it.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 4 7v8c0 7.5 5.1 13.4 12 15 6.9-1.6 12-7.5 12-15V7z' fill='%232f6fed'/%3E%3Cpath d='m11 16 3.5 3.5L21 13' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --ink: #14171f; --muted: #5c6370; --line: #e3e6eb; --soft: #eef1f5;
+  --accent: #2f6fed; --accent-ink: #ffffff; --ok: #137a4b; --ok-bg: #e6f5ee; --bad: #b42318; --bad-bg: #fdecea;
+  --warn: #8a5a00; --warn-bg: #fff4dc; --code-bg: #f3f5f8;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1116; --panel: #161a21; --ink: #e7eaf0; --muted: #9aa3b2; --line: #262c36; --soft: #1d222b;
+    --accent: #5b8cff; --accent-ink: #0b0e13; --ok: #4fd18b; --ok-bg: #12291d; --bad: #ff7b72; --bad-bg: #2d1416;
+    --warn: #f0b849; --warn-bg: #2b2210; --code-bg: #0f1319;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--sans); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, pre, textarea, .mono { font-family: var(--mono); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+
+header { padding: 28px 0 8px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.01em; }
+.brand svg { width: 26px; height: 26px; }
+.top nav { display: flex; gap: 18px; font-size: 14px; }
+h1 { font-size: clamp(26px, 4vw, 38px); line-height: 1.15; letter-spacing: -0.02em; margin: 26px 0 10px; max-width: 820px; }
+.lede { color: var(--muted); font-size: 17px; max-width: 760px; margin: 0; }
+
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 24px 0 8px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.stat b { display: block; font-size: 24px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 13px; }
+
+main.grid { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 16px; margin: 20px 0 28px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; min-width: 0; }
+aside.panel { padding: 16px; position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }
+label.lbl { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 6px; }
+select, input[type=text], textarea {
+  width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 9px;
+  padding: 9px 11px; font-size: 14px;
+}
+select:focus, input:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tables { margin-top: 14px; font-size: 13px; }
+.tables details { border-top: 1px solid var(--line); padding: 7px 0; }
+.tables summary { cursor: pointer; font-family: var(--mono); font-weight: 600; }
+.tables summary small { color: var(--muted); font-family: var(--sans); font-weight: 400; }
+.tables ul { margin: 6px 0 2px; padding-left: 16px; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.note { font-size: 13px; color: var(--muted); }
+
+.tabs { display: flex; gap: 4px; padding: 10px 10px 0; border-bottom: 1px solid var(--line); }
+.tab { border: 0; background: none; color: var(--muted); padding: 10px 14px; font: 600 14px var(--sans); border-bottom: 2px solid transparent; cursor: pointer; }
+.tab[aria-selected=true] { color: var(--ink); border-color: var(--accent); }
+.tabpane { padding: 16px; }
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.toolbar select { width: auto; flex: 1 1 220px; min-width: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; max-height: 128px; overflow: auto; }
+.chip { border: 1px solid var(--line); background: var(--soft); color: var(--ink); border-radius: 999px; padding: 4px 10px; font: 12px var(--mono); cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip:hover { border-color: var(--accent); }
+textarea#sql { min-height: 132px; resize: vertical; font-size: 14px; line-height: 1.5; tab-size: 2; }
+.actions { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+button.primary, button.ghost { border-radius: 9px; padding: 9px 16px; font: 600 14px var(--sans); cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent); }
+button.primary:disabled { opacity: .6; cursor: progress; }
+button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.kbd { font: 12px var(--mono); color: var(--muted); }
+
+.result { margin-top: 16px; }
+.verdict { border-radius: 12px; padding: 14px 16px; border: 1px solid transparent; }
+.verdict.ok { background: var(--ok-bg); border-color: color-mix(in srgb, var(--ok) 30%, transparent); }
+.verdict.bad { background: var(--bad-bg); border-color: color-mix(in srgb, var(--bad) 30%, transparent); }
+.verdict h3 { margin: 0 0 4px; font-size: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.verdict.ok h3 { color: var(--ok); } .verdict.bad h3 { color: var(--bad); }
+.pill { font: 600 11px var(--mono); padding: 2px 8px; border-radius: 999px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); }
+.verdict p { margin: 4px 0 0; }
+.hint { color: var(--muted); font-size: 14px; }
+.layers-strip { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.layers-strip span { font-size: 12px; padding: 3px 9px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); }
+.layers-strip span.hit { color: var(--bad); border-color: var(--bad); font-weight: 600; }
+.layers-strip span.pass { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); }
+.meta { color: var(--muted); font-size: 13px; margin: 12px 0 6px; display: flex; gap: 14px; flex-wrap: wrap; }
+pre.sql { background: var(--code-bg); border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; overflow: auto; font-size: 13px; margin: 6px 0 0; white-space: pre-wrap; word-break: break-word; }
+.warnbox { background: var(--warn-bg); color: var(--warn); border-radius: 9px; padding: 10px 12px; font-size: 14px; margin-top: 12px; }
+.tablewrap { overflow: auto; border: 1px solid var(--line); border-radius: 9px; margin-top: 12px; max-height: 420px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { position: sticky; top: 0; background: var(--soft); font-weight: 600; }
+td { font-variant-numeric: tabular-nums; max-width: 420px; }
+td.flag { background: var(--warn-bg); }
+.sub { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 0; }
+
+.steps { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; }
+.steps li { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); }
+.steps .head { display: flex; gap: 8px; align-items: center; font: 600 13px var(--mono); }
+.answer { margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: var(--soft); }
+.off { background: var(--soft); border-radius: 12px; padding: 16px; }
+
+section.block { margin: 0 0 28px; }
+section.block h2 { font-size: 20px; letter-spacing: -0.01em; margin: 0 0 12px; }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 14px; }
+.card h3 { margin: 0 0 6px; font-size: 15px; }
+.card p { margin: 0; color: var(--muted); }
+.copyrow { display: flex; gap: 8px; align-items: stretch; margin-top: 8px; }
+.copyrow pre { flex: 1; margin: 0; }
+footer { color: var(--muted); font-size: 13px; padding: 8px 0 40px; }
+
+@media (max-width: 900px) {
+  main.grid { grid-template-columns: minmax(0, 1fr); }
+  aside.panel { position: static; max-height: none; }
+  .stats, .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) { .stats, .cards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="top">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 4 7v8c0 7.5 5.1 13.4 12 15 6.9-1.6 12-7.5 12-15V7z" fill="var(--accent)"/><path d="m11 16 3.5 3.5L21 13" stroke="var(--panel)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      SafeSQL-MCP
+    </div>
+    <nav>
+      <a href="#connect">Connect an agent</a>
+      <a href="#layers">How it works</a>
+      <a href="https://github.com/ChaitanyaKharche/SafeSQL-MCP" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+  <h1>A text-to-SQL MCP server an AI agent can't break.</h1>
+  <p class="lede">Every query is parsed into a syntax tree, checked against allowlists, cost-checked with <code>EXPLAIN</code> and run read-only. Type any SQL below, or fire one of the attacks from the CI suite, and see which layer stops it.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<main class="wrap grid">
+  <aside class="panel" aria-label="Database">
+    <label class="lbl" for="schema">Database</label>
+    <select id="schema"></select>
+    <div class="tables" id="tables"><p class="note">Loading tables…</p></div>
+  </aside>
+
+  <section class="panel">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-sql" aria-selected="true" aria-controls="pane-sql">Run SQL</button>
+      <button class="tab" role="tab" id="tab-ask" aria-selected="false" aria-controls="pane-ask">Ask in English</button>
+    </div>
+
+    <div class="tabpane" id="pane-sql" role="tabpanel" aria-labelledby="tab-sql">
+      <div class="toolbar">
+        <select id="attack-cat" aria-label="Attack category"></select>
+        <button class="ghost" id="random-attack" type="button">Random attack</button>
+        <button class="ghost" id="safe-example" type="button">Safe example</button>
+      </div>
+      <div class="chips" id="attack-chips"></div>
+      <label class="lbl" for="sql">SQL</label>
+      <textarea id="sql" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+      <div class="actions">
+        <button class="primary" id="run" type="button">Run query</button>
+        <span class="kbd">Ctrl + Enter</span>
+        <span class="note" id="attack-note"></span>
+      </div>
+      <div class="result" id="result" aria-live="polite"></div>
+    </div>
+
+    <div class="tabpane" id="pane-ask" role="tabpanel" aria-labelledby="tab-ask" hidden>
+      <div id="ask-body"></div>
+    </div>
+  </section>
+</main>
+
+<section class="wrap block" id="connect">
+  <h2>Connect your own agent</h2>
+  <p class="note">This page is a front end to the same MCP server. Point Claude Code, Claude Desktop or Cursor at it and the model you already use does the asking; every query still goes through the guard.</p>
+  <div class="copyrow"><pre class="sql" id="cmd-claude"></pre><button class="ghost" data-copy="cmd-claude" type="button">Copy</button></div>
+  <div class="copyrow"><pre class="sql" id="cmd-json"></pre><button class="ghost" data-copy="cmd-json" type="button">Copy</button></div>
+</section>
+
+<section class="wrap block" id="layers">
+  <h2>How it works</h2>
+  <div class="cards">
+    <div class="card"><h3>1 · Static guard</h3><p>Parses with sqlglot and decides on the tree: one statement, SELECT only, no write or lock node anywhere, every function and table on an allowlist.</p></div>
+    <div class="card"><h3>2 · Rewrite</h3><p>Injects a row limit and runs SQL regenerated from the checked tree, comments stripped and re-parsed. Text the guard never saw can't run.</p></div>
+    <div class="card"><h3>3 · Runtime limits</h3><p>Read-only transaction, statement timeout, an <code>EXPLAIN</code> cost cap before execution, and prepared statements that refuse stacked queries.</p></div>
+    <div class="card"><h3>4 · Database role</h3><p>A role with SELECT grants only, read-only by default, dangerous functions revoked. It holds even if every layer above failed.</p></div>
+  </div>
+</section>
+
+<footer class="wrap">Data: Spider (Yu et al., 2018; CC BY-SA 4.0), ported to Postgres, plus a synthetic shop table with planted prompt injections. Source on <a href="https://github.com/ChaitanyaKharche/SafeSQL-MCP">GitHub</a>.</footer>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+// Every database value is rendered with textContent: the demo data contains HTML and injection payloads on purpose.
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") node.className = v; else if (k === "text") node.textContent = v; else node.setAttribute(k, v);
+  }
+  for (const c of children) if (c != null) node.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  return node;
+}
+const LAYER_TEXT = { guard: "Blocked by the static guard", runtime_limits: "Stopped by runtime limits", database: "Rejected by the database" };
+const LAYERS = [["guard", "Static guard"], ["rewrite", "Rewrite"], ["runtime_limits", "Runtime limits"], ["database", "Database role"]];
+const CATEGORY_LABEL = { dml: "Data changes", ddl: "Schema changes", stacked_queries: "Stacked queries", hidden_writes: "Writes hidden in a SELECT",
+  session_and_admin: "Session and admin commands", dangerous_functions: "Dangerous functions", catalog_recon: "System catalog recon",
+  cross_schema: "Other schemas and secrets", resource_exhaustion: "Resource exhaustion", obfuscation: "Obfuscation" };
+let config = null;
+const state = { schema: null, schemaInfo: {} };
+
+async function api(path, body) {
+  const res = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+  if (!res.ok && !("ok" in data)) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+function renderStats(s) {
+  const tiles = [];
+  if (s.attacks) tiles.push([`${s.attacks_blocked} / ${s.attacks}`, "attacks blocked in CI"]);
+  if (s.benign) tiles.push([`${Math.round(s.benign_rate * s.benign)} / ${s.benign}`, "real benchmark queries allowed"]);
+  if (s.accuracy != null) tiles.push([`${(s.accuracy * 100).toFixed(1)}%`, `answer accuracy on Spider (${s.model || "agent"})`]);
+  if (s.cost_per_question != null) tiles.push([`$${s.cost_per_question.toFixed(4)}`, "LLM cost per question"]);
+  $("stats").replaceChildren(...tiles.map(([b, t]) => el("div", { class: "stat" }, el("b", { text: b }), el("span", { text: t }))));
+}
+
+async function selectSchema(name) {
+  state.schema = name;
+  $("schema").value = name;
+  const box = $("tables");
+  box.replaceChildren(el("p", { class: "note", text: "Loading tables…" }));
+  try {
+    const info = state.schemaInfo[name] || (state.schemaInfo[name] = await api(`/api/schema?schema=${encodeURIComponent(name)}`));
+    box.replaceChildren(...info.tables.map((t) => el("details", {},
+      el("summary", {}, t.table, " ", el("small", { text: t.approx_rows != null ? `· ~${t.approx_rows} rows` : "" })),
+      el("ul", {}, ...t.columns.map((c) => el("li", { text: c }))))));
+  } catch (e) { box.replaceChildren(el("p", { class: "note", text: `Couldn't load tables: ${e.message}` })); }
+  renderAsk();
+}
+
+function fillCategories() {
+  const cats = [...new Set(config.attacks.map((a) => a.category))];
+  $("attack-cat").replaceChildren(el("option", { value: "", text: `Attacks from the CI suite (${config.attacks.length})` }),
+    ...cats.map((c) => el("option", { value: c, text: `${CATEGORY_LABEL[c] || c} (${config.attacks.filter((a) => a.category === c).length})` })),
+    el("option", { value: "__tricky", text: `Tricky but harmless (${config.tricky.length})` }));
+}
+
+function showChips(cat) {
+  const list = cat === "__tricky" ? config.tricky : config.attacks.filter((a) => !cat || a.category === cat);
+  $("attack-chips").replaceChildren(...list.slice(0, cat ? 60 : 24).map((a) => {
+    const chip = el("button", { class: "chip", type: "button", title: a.sql, text: a.sql.replace(/\s+/g, " ") });
+    chip.addEventListener("click", () => loadAttack(a, cat === "__tricky"));
+    return chip;
+  }));
+}
+
+function loadAttack(a, harmless) {
+  if (config.attack_schema && state.schema !== config.attack_schema && config.schemas.some((s) => s.name === config.attack_schema)) {
+    selectSchema(config.attack_schema);
+  }
+  $("sql").value = a.sql;
+  $("attack-note").textContent = harmless ? `Looks scary, should run: ${a.why}` : `CI case ${a.id}`;
+  run();
+}
+
+function layerStrip(hitLayer, allowed) {
+  return el("div", { class: "layers-strip" }, ...LAYERS.map(([key, label]) => {
+    const cls = allowed ? "pass" : key === hitLayer ? "hit" : "";
+    return el("span", { class: cls, text: allowed ? `✓ ${label}` : key === hitLayer ? `✕ ${label}` : label });
+  }));
+}
+
+function renderRows(res) {
+  const flagged = new Set((res.injection_warnings || []).map((w) => `${w.row}:${w.column}`));
+  const head = el("tr", {}, ...res.columns.map((c) => el("th", { text: c })));
+  const body = res.rows.map((r, i) => el("tr", {}, ...r.map((v, j) => el("td", { class: flagged.has(`${i}:${j}`) ? "flag" : "",
+    text: v === null ? "NULL" : typeof v === "object" ? JSON.stringify(v) : String(v) }))));
+  return el("div", { class: "tablewrap" }, el("table", {}, el("thead", {}, head), el("tbody", {}, ...body)));
+}
+
+async function run() {
+  const sql = $("sql").value;
+  const btn = $("run");
+  btn.disabled = true;
+  try {
+    const res = await api("/api/query", { schema: state.schema, sql });
+    const out = [];
+    if (res.ok) {
+      out.push(el("div", { class: "verdict ok" },
+        el("h3", {}, "Allowed: a read-only query ran"),
+        el("p", { class: "hint", text: "It passed every layer. The SQL that actually ran is below, with the row limit the guard added." }),
+        layerStrip(null, true)));
+      out.push(el("div", { class: "meta" }, el("span", { text: `${res.row_count} row${res.row_count === 1 ? "" : "s"}${res.truncated ? " (truncated)" : ""}` }),
+        el("span", { text: `plan cost ${res.estimated_cost}` }), el("span", { text: `${res.elapsed_ms} ms` })));
+      out.push(el("p", { class: "sub", text: "What actually ran" }), el("pre", { class: "sql", text: res.executed_sql }));
+      if (res.injection_warnings && res.injection_warnings.length) {
+        out.push(el("div", { class: "warnbox", text: `${res.injection_warnings.length} cell(s) read like instructions to an AI. They come back as plain data, flagged, so an agent knows not to follow them.` }));
+      }
+      if (res.columns.length) out.push(renderRows(res));
+    } else {
+      const err = res.error || {};
+      out.push(el("div", { class: "verdict bad" },
+        el("h3", {}, LAYER_TEXT[res.layer] || "Rejected", el("span", { class: "pill", text: err.code || "error" })),
+        el("p", { text: err.message || "" }),
+        err.hint ? el("p", { class: "hint", text: `Hint returned to the agent: ${err.hint}` }) : null,
+        layerStrip(res.layer, false)));
+    }
+    $("result").replaceChildren(...out);
+  } catch (e) {
+    $("result").replaceChildren(el("div", { class: "verdict bad" }, el("h3", { text: "Request failed" }), el("p", { text: e.message })));
+  } finally { btn.disabled = false; }
+}
+
+function currentSchemaConfig() { return config.schemas.find((s) => s.name === state.schema) || {}; }
+
+function renderAsk() {
+  if (!config) return;
+  const body = $("ask-body");
+  const sc = currentSchemaConfig();
+  if (!config.agent.enabled) {
+    body.replaceChildren(el("div", { class: "off" },
+      el("h3", { text: "Plain-English mode is off on this deployment" }),
+      el("p", { class: "note", text: "It calls a paid LLM API, so it's disabled on the public page. Connect your own agent (below) to ask questions in English, or run the agent locally:" }),
+      el("pre", { class: "sql", text: `safesql ask "${sc.question || "How many rows are in each table?"}" --schemas ${state.schema}` })));
+    return;
+  }
+  const input = el("input", { type: "text", id: "question", maxlength: "400", value: sc.question || "" });
+  const btn = el("button", { class: "primary", type: "button", text: "Ask" });
+  const quota = el("span", { class: "note", text: `${config.agent.remaining_today} questions left today · ${config.agent.model}` });
+  const out = el("div", { class: "result", "aria-live": "polite" });
+  const go = async () => {
+    btn.disabled = true;
+    out.replaceChildren(el("p", { class: "note", text: "The agent is working: reading the schema, writing SQL, running it through the guard…" }));
+    try {
+      const res = await api("/api/ask", { schema: state.schema, question: input.value });
+      if (res.error && !res.status) throw new Error(res.error);
+      config.agent.remaining_today = res.remaining_today;
+      quota.textContent = `${res.remaining_today} questions left today · ${config.agent.model}`;
+      const steps = res.trace.map((t) => el("li", {},
+        el("div", { class: "head" }, t.tool, el("span", { class: "pill", text: t.ok ? "ok" : `${t.error_code}${t.layer ? " · " + t.layer : ""}` })),
+        t.input && t.input.sql ? el("pre", { class: "sql", text: t.input.sql }) : t.input && t.input.table ? el("span", { class: "note", text: t.input.table }) : null));
+      out.replaceChildren(
+        el("div", { class: "answer" }, el("strong", { text: res.status === "answered" ? "Answer" : `Agent status: ${res.status}` }), el("p", { text: res.answer || res.error || "" })),
+        el("div", { class: "meta" }, el("span", { text: `${res.turns} turns` }), el("span", { text: `$${res.cost_usd.toFixed(5)}` }),
+          el("span", { text: `${Math.round(res.cache_hit_rate * 100)}% of prompt from cache` }), el("span", { text: `${(res.latency_ms / 1000).toFixed(1)} s` })),
+        el("p", { class: "sub", text: "What the agent did" }), el("ol", { class: "steps" }, ...steps));
+    } catch (e) { out.replaceChildren(el("div", { class: "verdict bad" }, el("h3", { text: "Couldn't answer" }), el("p", { text: e.message }))); }
+    finally { btn.disabled = false; }
+  };
+  btn.addEventListener("click", go);
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") go(); });
+  body.replaceChildren(el("label", { class: "lbl", for: "question", text: "Question" }), input,
+    el("div", { class: "actions" }, btn, quota),
+    el("p", { class: "note", text: "Try asking it to delete something, or to read the secrets schema. Its SQL still goes through the guard." }), out);
+}
+
+function selectTab(which) {
+  for (const t of ["sql", "ask"]) {
+    $(`tab-${t}`).setAttribute("aria-selected", String(t === which));
+    $(`pane-${t}`).hidden = t !== which;
+  }
+}
+
+function renderConnect() {
+  const url = `${location.origin}/mcp`;
+  $("cmd-claude").textContent = `claude mcp add --transport http safesql ${url}`;
+  $("cmd-json").textContent = JSON.stringify({ mcpServers: { safesql: { type: "http", url } } }, null, 2);
+  document.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText($(b.dataset.copy).textContent); b.textContent = "Copied"; } catch { b.textContent = "Select and copy"; }
+    setTimeout(() => (b.textContent = "Copy"), 1500);
+  }));
+}
+
+async function init() {
+  renderConnect();
+  $("tab-sql").addEventListener("click", () => selectTab("sql"));
+  $("tab-ask").addEventListener("click", () => selectTab("ask"));
+  $("run").addEventListener("click", run);
+  $("sql").addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); run(); } });
+  $("attack-cat").addEventListener("change", (e) => showChips(e.target.value));
+  $("random-attack").addEventListener("click", () => loadAttack(config.attacks[Math.floor(Math.random() * config.attacks.length)], false));
+  $("safe-example").addEventListener("click", () => { $("sql").value = currentSchemaConfig().sql || ""; $("attack-note").textContent = ""; run(); });
+  $("schema").addEventListener("change", (e) => { selectSchema(e.target.value); $("sql").value = currentSchemaConfig().sql || ""; $("result").replaceChildren(); });
+  try { config = await api("/api/config"); } catch (e) { $("result").textContent = `Couldn't reach the server: ${e.message}`; return; }
+  renderStats(config.stats || {});
+  $("schema").replaceChildren(...config.schemas.map((s) => el("option", { value: s.name, text: s.label })));
+  fillCategories();
+  showChips("");
+  const first = config.schemas[0];
+  await selectSchema(first.name);
+  $("sql").value = first.sql || "";
+}
+init();
+</script>
+</body>
+</html>

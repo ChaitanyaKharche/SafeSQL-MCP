@@ -22,23 +22,9 @@ from psycopg import sql
 
 from ..config import Settings
 from ..executor import Executor
-from ..service import SafeSQLService
+from ..service import SafeSQLService, layer_of
 
-GUARD_CODES = {
-    "empty_query", "too_long", "invalid_characters", "parse_error", "multiple_statements",
-    "statement_not_allowed", "forbidden_operation", "dangerous_function", "function_not_allowed",
-    "unknown_table", "cross_database", "internal_rewrite_error",
-}  # fmt: skip
-RUNTIME_CODES = {"cost_limit", "timeout"}
 INTEGRITY_SCHEMAS = ("spider_concert_singer", "inject_demo", "secrets")
-
-
-def layer_of(code: str) -> str:
-    if code in GUARD_CODES:
-        return "guard"
-    if code in RUNTIME_CODES:
-        return "runtime_limits"
-    return "database"
 
 
 def snapshot(admin_url: str) -> dict[str, str]:

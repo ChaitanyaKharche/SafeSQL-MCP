@@ -31,10 +31,16 @@ def cmd_serve(args) -> None:
     from .telemetry import setup_telemetry
 
     setup_telemetry("safesql-mcp")
-    server = build_server(SafeSQLService.from_settings(_settings(args)), log_level="INFO")
+    settings = _settings(args)
+    service = SafeSQLService.from_settings(settings)
+    server = build_server(service, log_level="INFO")
     if args.transport == "stdio":
         server.run("stdio")
         return
+    if args.demo or os.environ.get("SAFESQL_DEMO") == "1":
+        from .web import DemoApp
+
+        DemoApp.from_env(settings, service.executor).mount(server)
     security = None
     allowed = [h.strip() for h in os.environ.get("SAFESQL_ALLOWED_HOSTS", "").split(",") if h.strip()]
     if allowed:  # DNS-rebinding protection for public deployments (the SDK only defaults it on localhost)
@@ -112,6 +118,7 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8000)
     s.add_argument("--schemas", help="comma-separated schemas (overrides SAFESQL_SCHEMAS)")
+    s.add_argument("--demo", action="store_true", help="also serve the web playground at / (HTTP only)")
     s.set_defaults(func=cmd_serve)
 
     q = sub.add_parser("query", help="run one SQL query through the guard")

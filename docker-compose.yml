@@ -1,6 +1,6 @@
 # Local stack: Postgres + one-shot provisioning + the MCP server + Jaeger for traces.
 #   docker compose up --build
-#   MCP endpoint:  http://localhost:8000/mcp     Traces: http://localhost:16686
+#   Playground: http://localhost:8000    MCP endpoint: http://localhost:8000/mcp    Traces: http://localhost:16686
 services:
   postgres:
     image: postgres:17
@@ -30,6 +30,7 @@ services:
 
   mcp:
     build: .
+    command: ["safesql", "serve", "--transport", "http", "--host", "0.0.0.0", "--port", "8000", "--demo"]
     environment:
       SAFESQL_DATABASE_URL: postgresql://safesql_reader:${SAFESQL_READER_PASSWORD:-reader-dev-pw}@postgres:5432/safesql
       SAFESQL_SCHEMAS: ${SAFESQL_SCHEMAS:-spider_concert_singer}
