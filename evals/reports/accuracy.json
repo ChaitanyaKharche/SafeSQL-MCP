@@ -1,0 +1,1382 @@
+{
+  "eval": "accuracy",
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "questions": 40,
+  "golden_pool": 864,
+  "seed": 7,
+  "exec_accuracy": 0.875,
+  "correct": 35,
+  "answered_rate": 1.0,
+  "avg_turns": 3.15,
+  "avg_tool_calls": 2.4,
+  "questions_with_sql_errors": 0,
+  "recovered_after_error": 0,
+  "guard_rejections": 0,
+  "latency_ms": {
+    "p50": 4892.5,
+    "p95": 8009.7
+  },
+  "cost_usd": {
+    "total": 0.0177,
+    "per_question": 0.000442,
+    "prewarm": 2.4e-05
+  },
+  "tokens": {
+    "input_tokens": 332,
+    "output_tokens": 16211,
+    "cache_read_input_tokens": 253256,
+    "cache_creation_input_tokens": 55987
+  },
+  "cache_hit_rate": 0.8181,
+  "prewarm_usage": {
+    "input_tokens": 78,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 1660,
+    "cache_creation_input_tokens": 0
+  },
+  "status_counts": {
+    "answered": 40
+  },
+  "per_database": {
+    "battle_death": {
+      "correct": 2,
+      "total": 2
+    },
+    "car_1": {
+      "correct": 0,
+      "total": 2
+    },
+    "concert_singer": {
+      "correct": 2,
+      "total": 2
+    },
+    "course_teach": {
+      "correct": 0,
+      "total": 2
+    },
+    "cre_Doc_Template_Mgt": {
+      "correct": 2,
+      "total": 2
+    },
+    "dog_kennels": {
+      "correct": 2,
+      "total": 2
+    },
+    "employee_hire_evaluation": {
+      "correct": 2,
+      "total": 2
+    },
+    "flight_2": {
+      "correct": 2,
+      "total": 2
+    },
+    "museum_visit": {
+      "correct": 2,
+      "total": 2
+    },
+    "network_1": {
+      "correct": 2,
+      "total": 2
+    },
+    "orchestra": {
+      "correct": 2,
+      "total": 2
+    },
+    "pets_1": {
+      "correct": 2,
+      "total": 2
+    },
+    "poker_player": {
+      "correct": 2,
+      "total": 2
+    },
+    "real_estate_properties": {
+      "correct": 1,
+      "total": 2
+    },
+    "singer": {
+      "correct": 2,
+      "total": 2
+    },
+    "student_transcripts_tracking": {
+      "correct": 2,
+      "total": 2
+    },
+    "tvshow": {
+      "correct": 2,
+      "total": 2
+    },
+    "voter_1": {
+      "correct": 2,
+      "total": 2
+    },
+    "world_1": {
+      "correct": 2,
+      "total": 2
+    },
+    "wta_1": {
+      "correct": 2,
+      "total": 2
+    }
+  },
+  "duration_s": 58.0,
+  "results": [
+    {
+      "id": "spider-dev-0011",
+      "db_id": "concert_singer",
+      "question": "How many singers are from each country?",
+      "gold_sql": "SELECT country, COUNT(*) FROM singer GROUP BY country",
+      "pred_sql": "SELECT country, COUNT(*) AS singer_count FROM spider_concert_singer.singer GROUP BY country ORDER BY country",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "France has 4 singers, the Netherlands has 1, and the United States has 1.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 264,
+        "cache_read_input_tokens": 5778,
+        "cache_creation_input_tokens": 1063
+      },
+      "cost_usd": 0.000323,
+      "latency_ms": 5226.8,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8436
+    },
+    {
+      "id": "spider-dev-0029",
+      "db_id": "concert_singer",
+      "question": "What are the names of the stadiums without any concerts?",
+      "gold_sql": "SELECT name FROM stadium WHERE NOT stadium_id IN (SELECT stadium_id FROM concert)",
+      "pred_sql": "SELECT s.name FROM stadium s WHERE NOT EXISTS (SELECT 1 FROM concert c WHERE c.stadium_id = s.stadium_id)",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Four stadiums have no concerts: Bayview Stadium, Hampden Park, Forthbank Stadium, and Gayfield Park.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 311,
+        "cache_read_input_tokens": 5792,
+        "cache_creation_input_tokens": 1116
+      },
+      "cost_usd": 0.000354,
+      "latency_ms": 5429.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8375
+    },
+    {
+      "id": "spider-dev-0054",
+      "db_id": "pets_1",
+      "question": "How many dog pets are raised by female students?",
+      "gold_sql": "SELECT COUNT(*) FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid JOIN pets AS t3 ON t2.petid = t3.petid WHERE t1.sex = 'F' AND t3.pettype = 'dog'",
+      "pred_sql": "SELECT COUNT(*) AS dog_count FROM has_pet hp JOIN pets p ON hp.petid = p.petid JOIN student s ON hp.stuid = s.stuid WHERE p.pettype = 'dog' AND s.sex = 'F'",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "2 dog pets are raised by female students.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 461,
+        "cache_read_input_tokens": 5586,
+        "cache_creation_input_tokens": 1483
+      },
+      "cost_usd": 0.000473,
+      "latency_ms": 5325.3,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7893
+    },
+    {
+      "id": "spider-dev-0081",
+      "db_id": "pets_1",
+      "question": "Find the first name and gender of student who have more than one pet.",
+      "gold_sql": "SELECT t1.fname, t1.sex FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid GROUP BY t1.stuid HAVING COUNT(*) > 1",
+      "pred_sql": "SELECT s.fname, s.sex FROM student s WHERE s.stuid IN (SELECT stuid FROM has_pet GROUP BY stuid HAVING COUNT(*) > 1)",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "One student has more than one pet: Tracy, who is female (F).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 300,
+        "cache_read_input_tokens": 5596,
+        "cache_creation_input_tokens": 885
+      },
+      "cost_usd": 0.000317,
+      "latency_ms": 4716.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8624
+    },
+    {
+      "id": "spider-dev-0102",
+      "db_id": "car_1",
+      "question": "What is the maker of the carr produced in the earliest year and what year was it?",
+      "gold_sql": "SELECT t2.make, t1.year FROM cars_data AS t1 JOIN car_names AS t2 ON t1.id = t2.makeid WHERE t1.year = (SELECT MIN(year) FROM cars_data)",
+      "pred_sql": "SELECT cn.model, cd.year FROM cars_data cd JOIN car_names cn ON cn.makeid = cd.id WHERE cd.year = (SELECT MIN(year) FROM cars_data) ORDER BY cn.makeid",
+      "correct": false,
+      "reason": "wrong_result",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "I couldn't find any car called \"carr\" in the database (no model or make contains that text), so I'm assuming you meant cars in general. The earliest year is 1970, and 35 cars from that year are recorded, made by many different makers (Chevrolet, Buick, Plymouth, AMC, Ford, Dodge, Pontiac, Citroen, Toyota, Datsun, Volkswagen, Peugeot, Audi, Saab, BMW, and Hi). That means there is no single maker for the 1970 car. If you can tell me the exact car name, I can look up its maker and year.",
+      "turns": 6,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok",
+        "run_query:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 14,
+        "output_tokens": 1743,
+        "cache_read_input_tokens": 17800,
+        "cache_creation_input_tokens": 5351
+      },
+      "cost_usd": 0.00172,
+      "latency_ms": 13196.6,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7684
+    },
+    {
+      "id": "spider-dev-0160",
+      "db_id": "car_1",
+      "question": "What is the number of cars with a greater accelerate than the one with the most horsepower?",
+      "gold_sql": "SELECT COUNT(*) FROM cars_data WHERE accelerate > (SELECT accelerate FROM cars_data ORDER BY horsepower DESC NULLS LAST LIMIT 1)",
+      "pred_sql": "SELECT COUNT(*) FROM cars_data WHERE accelerate > (SELECT accelerate FROM cars_data WHERE horsepower ~ '^[0-9]+$' ORDER BY CAST(horsepower AS INT) DESC LIMIT 1)",
+      "correct": false,
+      "reason": "wrong_result",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "399 cars have a greater accelerate than the car with the most horsepower (id 124, 230 hp, accelerate 9.5). Horsepower is stored as text, so I cast it to an integer and skipped non-numeric values when finding the maximum.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 733,
+        "cache_read_input_tokens": 5945,
+        "cache_creation_input_tokens": 1846
+      },
+      "cost_usd": 0.000658,
+      "latency_ms": 6381.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7623
+    },
+    {
+      "id": "spider-dev-0241",
+      "db_id": "flight_2",
+      "question": "Find all airlines that have at least 10 flights.",
+      "gold_sql": "SELECT t1.airline FROM airlines AS t1 JOIN flights AS t2 ON t1.uid = t2.airline GROUP BY t1.airline HAVING COUNT(*) > 10",
+      "pred_sql": "SELECT a.airline FROM airlines a JOIN flights f ON f.airline = a.uid GROUP BY a.uid, a.airline HAVING COUNT(*) >= 10 ORDER BY a.airline",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Twelve airlines have at least 10 flights: AirTran Airways, Allegiant Air, American Airlines, Continental Airlines, Delta Airlines, Frontier Airlines, JetBlue Airways, Northwest Airlines, Southwest Airlines, US Airways, United Airlines, and Virgin America.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 400,
+        "cache_read_input_tokens": 5605,
+        "cache_creation_input_tokens": 1095
+      },
+      "cost_usd": 0.000394,
+      "latency_ms": 8009.7,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8356
+    },
+    {
+      "id": "spider-dev-0244",
+      "db_id": "flight_2",
+      "question": "Which airlines have less than 200 flights?",
+      "gold_sql": "SELECT t1.airline FROM airlines AS t1 JOIN flights AS t2 ON t1.uid = t2.airline GROUP BY t1.airline HAVING COUNT(*) < 200",
+      "pred_sql": "SELECT a.airline FROM airlines a JOIN flights f ON f.airline = a.uid GROUP BY a.uid, a.airline HAVING COUNT(*) < 200",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "All 12 airlines have fewer than 200 flights, each with exactly 100: Virgin America, Delta Airlines, Allegiant Air, JetBlue Airways, AirTran Airways, Frontier Airlines, Continental Airlines, United Airlines, American Airlines, Southwest Airlines, US Airways, and Northwest Airlines.",
+      "turns": 4,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 701,
+        "cache_read_input_tokens": 8331,
+        "cache_creation_input_tokens": 1852
+      },
+      "cost_usd": 0.000666,
+      "latency_ms": 7366.7,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8173
+    },
+    {
+      "id": "spider-dev-0264",
+      "db_id": "employee_hire_evaluation",
+      "question": "Count the number of employees for each city.",
+      "gold_sql": "SELECT COUNT(*), city FROM employee GROUP BY city",
+      "pred_sql": "SELECT city, COUNT(*) AS employee_count FROM spider_employee_hire_evaluation.employee GROUP BY city ORDER BY city",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Bath: 3, Bristol: 3, Leicester: 1, Sale: 1, Wasps: 2 employees.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 385,
+        "cache_read_input_tokens": 5746,
+        "cache_creation_input_tokens": 1513
+      },
+      "cost_usd": 0.00044,
+      "latency_ms": 5231.6,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7907
+    },
+    {
+      "id": "spider-dev-0276",
+      "db_id": "employee_hire_evaluation",
+      "question": "Which shops' number products is above the average? Give me the shop names.",
+      "gold_sql": "SELECT name FROM shop WHERE number_products > (SELECT AVG(number_products) FROM shop)",
+      "pred_sql": "SELECT name FROM spider_employee_hire_evaluation.shop WHERE number_products > (SELECT AVG(number_products) FROM spider_employee_hire_evaluation.shop)",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Three shops have a number of products above the average: HJK, FC Inter, and FC Lahti.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 305,
+        "cache_read_input_tokens": 5764,
+        "cache_creation_input_tokens": 1063
+      },
+      "cost_usd": 0.000344,
+      "latency_ms": 4512.5,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8433
+    },
+    {
+      "id": "spider-dev-0349",
+      "db_id": "cre_Doc_Template_Mgt",
+      "question": "What is the template type descriptions for template type code \"AD\".",
+      "gold_sql": "SELECT template_type_description FROM ref_template_types WHERE template_type_code = 'AD'",
+      "pred_sql": "SELECT template_type_description FROM spider_cre_doc_template_mgt.ref_template_types WHERE template_type_code = 'AD'",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "The template type description for code \"AD\" is \"Advertisement\".",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 258,
+        "cache_read_input_tokens": 5772,
+        "cache_creation_input_tokens": 1013
+      },
+      "cost_usd": 0.000314,
+      "latency_ms": 4648.3,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8497
+    },
+    {
+      "id": "spider-dev-0371",
+      "db_id": "cre_Doc_Template_Mgt",
+      "question": "List all document ids with at least two paragraphs.",
+      "gold_sql": "SELECT document_id FROM paragraphs GROUP BY document_id HAVING COUNT(*) >= 2",
+      "pred_sql": "SELECT document_id FROM spider_cre_doc_template_mgt.paragraphs GROUP BY document_id HAVING COUNT(*) >= 2 ORDER BY document_id",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Four documents have at least two paragraphs: 80, 2394, 651512, and 16514113.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 303,
+        "cache_read_input_tokens": 5768,
+        "cache_creation_input_tokens": 1069
+      },
+      "cost_usd": 0.000344,
+      "latency_ms": 4726.1,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8427
+    },
+    {
+      "id": "spider-dev-0387",
+      "db_id": "course_teach",
+      "question": "List the name of teachers whose hometown is not `` Little Lever Urban District '' .",
+      "gold_sql": "SELECT name FROM teacher WHERE hometown <> 'little lever urban district'",
+      "pred_sql": "SELECT name FROM teacher WHERE hometown <> 'Little Lever Urban District'",
+      "correct": false,
+      "reason": "wrong_result",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Six teachers have a hometown other than Little Lever Urban District: Joseph Huts, Gustaaf Deloor, Vicente Carretero, John Deloor, Kearsley Brown, and Lucy Wong.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 310,
+        "cache_read_input_tokens": 5622,
+        "cache_creation_input_tokens": 911
+      },
+      "cost_usd": 0.000326,
+      "latency_ms": 4501.4,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8595
+    },
+    {
+      "id": "spider-dev-0405",
+      "db_id": "course_teach",
+      "question": "Show names of teachers and the number of courses they teach.",
+      "gold_sql": "SELECT t2.name, COUNT(*) FROM course_arrange AS t1 JOIN teacher AS t2 ON t1.teacher_id = t2.teacher_id GROUP BY t2.name",
+      "pred_sql": "SELECT t.name, COUNT(ca.course_id) AS number_of_courses FROM teacher t LEFT JOIN course_arrange ca ON ca.teacher_id = t.teacher_id GROUP BY t.teacher_id, t.name ORDER BY t.name",
+      "correct": false,
+      "reason": "wrong_result",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Anne Walker teaches 2 courses; Gustaaf Deloor, Kearsley Brown, Lucy Wong and Vicente Carretero each teach 1; John Deloor and Joseph Huts teach none (0).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 475,
+        "cache_read_input_tokens": 5600,
+        "cache_creation_input_tokens": 1143
+      },
+      "cost_usd": 0.000437,
+      "latency_ms": 4996.3,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8295
+    },
+    {
+      "id": "spider-dev-0415",
+      "db_id": "museum_visit",
+      "question": "Find the id and name of the museum that has the most staff members?",
+      "gold_sql": "SELECT museum_id, name FROM museum ORDER BY num_of_staff DESC NULLS LAST LIMIT 1",
+      "pred_sql": "SELECT museum_id, name FROM museum ORDER BY num_of_staff DESC LIMIT 1",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "The museum with the most staff is Plaza Museum (museum_id 1).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 242,
+        "cache_read_input_tokens": 5625,
+        "cache_creation_input_tokens": 846
+      },
+      "cost_usd": 0.000284,
+      "latency_ms": 5067.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8682
+    },
+    {
+      "id": "spider-dev-0422",
+      "db_id": "museum_visit",
+      "question": "What is the name of the museum that had no visitor yet?",
+      "gold_sql": "SELECT name FROM museum WHERE NOT museum_id IN (SELECT museum_id FROM visit)",
+      "pred_sql": "SELECT m.name FROM spider_museum_visit.museum m WHERE NOT EXISTS (SELECT 1 FROM spider_museum_visit.visit v WHERE v.museum_id = m.museum_id)",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Four museums have no visits recorded: Jefferson Development Museum, RiverPark Museum, Place Tower Museum, and Central City District Residential Museum. The question assumes one, but the data has four.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 415,
+        "cache_read_input_tokens": 5623,
+        "cache_creation_input_tokens": 982
+      },
+      "cost_usd": 0.000387,
+      "latency_ms": 4795.1,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8503
+    },
+    {
+      "id": "spider-dev-0439",
+      "db_id": "wta_1",
+      "question": "Find the highest rank of losers in all matches.",
+      "gold_sql": "SELECT MIN(loser_rank) FROM matches",
+      "pred_sql": "SELECT MIN(loser_rank) AS highest_rank FROM matches",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "The highest rank among losers in all matches is 1, i.e. the best (numerically lowest) loser_rank value. If you meant the numerically largest rank, that would be MAX(loser_rank) instead.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 453,
+        "cache_read_input_tokens": 5899,
+        "cache_creation_input_tokens": 1283
+      },
+      "cost_usd": 0.000447,
+      "latency_ms": 5852.4,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8204
+    },
+    {
+      "id": "spider-dev-0477",
+      "db_id": "wta_1",
+      "question": "Find the codes of countries that have more than 50 players.",
+      "gold_sql": "SELECT country_code FROM players GROUP BY country_code HAVING COUNT(*) > 50",
+      "pred_sql": "SELECT country_code FROM spider_wta_1.players GROUP BY country_code HAVING COUNT(*) > 50",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "65 country codes have more than 50 players, including USA, RUS, GBR, GER, FRA, ESP, ITA, JPN, CHN, AUS, and others. The full list is returned by the query.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 343,
+        "cache_read_input_tokens": 5903,
+        "cache_creation_input_tokens": 2015
+      },
+      "cost_usd": 0.000483,
+      "latency_ms": 4751.9,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7448
+    },
+    {
+      "id": "spider-dev-0495",
+      "db_id": "battle_death",
+      "question": "What is the average number of injuries caused each time?",
+      "gold_sql": "SELECT AVG(injured) FROM death",
+      "pred_sql": "SELECT AVG(injured) AS avg_injured FROM spider_battle_death.death",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "The average number of injuries per recorded death incident is about 1.08 (14 injuries across 13 records, all non-null).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 342,
+        "cache_read_input_tokens": 5644,
+        "cache_creation_input_tokens": 1010
+      },
+      "cost_usd": 0.000354,
+      "latency_ms": 4794.1,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8472
+    },
+    {
+      "id": "spider-dev-0503",
+      "db_id": "battle_death",
+      "question": "How many battles did not lose any ship with tonnage '225'?",
+      "gold_sql": "SELECT COUNT(*) FROM battle WHERE NOT id IN (SELECT lost_in_battle FROM ship WHERE tonnage = '225')",
+      "pred_sql": "SELECT COUNT(*) FROM battle b WHERE NOT EXISTS (SELECT 1 FROM ship s WHERE s.lost_in_battle = b.id AND s.tonnage = '225')",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "7 battles did not lose any ship with tonnage '225'.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 518,
+        "cache_read_input_tokens": 5656,
+        "cache_creation_input_tokens": 1146
+      },
+      "cost_usd": 0.00046,
+      "latency_ms": 6452.9,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8305
+    },
+    {
+      "id": "spider-dev-0524",
+      "db_id": "student_transcripts_tracking",
+      "question": "What are the names and descriptions for all the sections?",
+      "gold_sql": "SELECT section_name, section_description FROM sections",
+      "pred_sql": "SELECT section_name, section_description FROM sections",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "There are 15 sections. Each has a name and a description: a (non), b (voluptatem), c (qui), d (voluptas), e (ex), f (doloremque), g (provident), h (et), j (quis), k (nesciunt), l (ad), o (et), p (facilis), u (reprehenderit), y (qui).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 280,
+        "cache_read_input_tokens": 6842,
+        "cache_creation_input_tokens": 2292
+      },
+      "cost_usd": 0.000496,
+      "latency_ms": 3219.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7484
+    },
+    {
+      "id": "spider-dev-0569",
+      "db_id": "student_transcripts_tracking",
+      "question": "What is the last transcript release date?",
+      "gold_sql": "SELECT transcript_date FROM transcripts ORDER BY transcript_date DESC NULLS LAST LIMIT 1",
+      "pred_sql": "SELECT transcript_date FROM spider_student_transcripts_tracking.transcripts ORDER BY transcript_date DESC LIMIT 1",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "The last transcript release date is 2013-06-30 13:01:40 (transcript_id 5).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "describe_table:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 412,
+        "cache_read_input_tokens": 6832,
+        "cache_creation_input_tokens": 2639
+      },
+      "cost_usd": 0.000605,
+      "latency_ms": 4995.1,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7208
+    },
+    {
+      "id": "spider-dev-0594",
+      "db_id": "tvshow",
+      "question": "What are the titles of all cartoons directed by Ben Jones or Brandon Vietti?",
+      "gold_sql": "SELECT title FROM cartoon WHERE directed_by = 'Ben Jones' OR directed_by = 'Brandon Vietti'",
+      "pred_sql": "SELECT title FROM cartoon WHERE directed_by IN ('Ben Jones', 'Brandon Vietti')",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Eight cartoons were directed by Ben Jones or Brandon Vietti: The Rise of the Blue Beetle!, Terror on Dinosaur Island!, Day of the Dark Knight!, Invasion of the Secret Santas!, Dawn of the Dead Man!, Fall of the Blue Beetle!, The Eyes of Despero!, and Return of the Fearsome Fangs!.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 448,
+        "cache_read_input_tokens": 5751,
+        "cache_creation_input_tokens": 1469
+      },
+      "cost_usd": 0.000466,
+      "latency_ms": 4892.5,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7957
+    },
+    {
+      "id": "spider-dev-0610",
+      "db_id": "tvshow",
+      "question": "What is the series name of the TV Channel that shows the cartoon \"The Rise of the Blue Beetle\"?",
+      "gold_sql": "SELECT t1.series_name FROM tv_channel AS t1 JOIN cartoon AS t2 ON t1.id = t2.channel WHERE t2.title = 'The Rise of the Blue Beetle!'",
+      "pred_sql": "SELECT t.series_name FROM cartoon c JOIN tv_channel t ON c.channel = t.id WHERE c.title = 'The Rise of the Blue Beetle!'",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "The cartoon \"The Rise of the Blue Beetle!\" (note the trailing exclamation mark in the stored title) is shown on the TV channel with series name \"Sky Radio\".",
+      "turns": 4,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 474,
+        "cache_read_input_tokens": 8417,
+        "cache_creation_input_tokens": 1449
+      },
+      "cost_usd": 0.000503,
+      "latency_ms": 5370.9,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8523
+    },
+    {
+      "id": "spider-dev-0648",
+      "db_id": "poker_player",
+      "question": "Count the number of poker players.",
+      "gold_sql": "SELECT COUNT(*) FROM poker_player",
+      "pred_sql": "SELECT COUNT(*) AS number_of_poker_players FROM spider_poker_player.poker_player",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "There are 5 poker players.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 225,
+        "cache_read_input_tokens": 5494,
+        "cache_creation_input_tokens": 716
+      },
+      "cost_usd": 0.000258,
+      "latency_ms": 4666.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8836
+    },
+    {
+      "id": "spider-dev-0663",
+      "db_id": "poker_player",
+      "question": "List the names of poker players ordered by the final tables made in ascending order.",
+      "gold_sql": "SELECT t1.name FROM people AS t1 JOIN poker_player AS t2 ON t1.people_id = t2.people_id ORDER BY t2.final_table_made NULLS FIRST",
+      "pred_sql": "SELECT p.name FROM poker_player pp JOIN people p ON pp.people_id = p.people_id ORDER BY pp.final_table_made ASC",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Poker players ordered by final tables made (ascending): Teodor Salparov, Maksim Botin, Yevgeni Sivozhelez, Semen Poltavskiy, Aleksey Ostapenko.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 321,
+        "cache_read_input_tokens": 5520,
+        "cache_creation_input_tokens": 854
+      },
+      "cost_usd": 0.000323,
+      "latency_ms": 4955.7,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8649
+    },
+    {
+      "id": "spider-dev-0689",
+      "db_id": "voter_1",
+      "question": "List the vote ids, phone numbers and states of all votes.",
+      "gold_sql": "SELECT vote_id, phone_number, state FROM votes",
+      "pred_sql": "SELECT vote_id, phone_number, state FROM votes",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "There are 4 votes: (1, 7182887233, NY), (2, 7148407040, NY), (3, 6209222712, CA), and (5, 5112677315, NJ). Note that the state value for vote 5 contains a trailing newline character in the stored data.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 269,
+        "cache_read_input_tokens": 5568,
+        "cache_creation_input_tokens": 846
+      },
+      "cost_usd": 0.000297,
+      "latency_ms": 3342.2,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.867
+    },
+    {
+      "id": "spider-dev-0693",
+      "db_id": "voter_1",
+      "question": "What are the distinct states and create time of all votes?",
+      "gold_sql": "SELECT DISTINCT state, created FROM votes",
+      "pred_sql": "SELECT DISTINCT state, created FROM spider_voter_1.votes",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "There are four distinct state and created-time combinations in the votes table: NY at 2018-03-09 19:03:21, NY at 2018-03-09 19:03:36, NJ at 2018-03-09 19:03:40, and CA at 2018-03-09 19:03:39. The NJ value stored in the database has a trailing newline character, so it may need trimming before comparison.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 449,
+        "cache_read_input_tokens": 5560,
+        "cache_creation_input_tokens": 863
+      },
+      "cost_usd": 0.000389,
+      "latency_ms": 6014.3,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8646
+    },
+    {
+      "id": "spider-dev-0722",
+      "db_id": "world_1",
+      "question": "What is the total population and maximum GNP in Asia?",
+      "gold_sql": "SELECT SUM(population), MAX(gnp) FROM country WHERE continent = 'Asia'",
+      "pred_sql": "SELECT SUM(population) AS total_population, MAX(gnp) AS max_gnp FROM spider_world_1.country WHERE continent = 'Asia'",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "In Asia, the total population is 3,705,025,700 and the maximum GNP is 3,787,042.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 288,
+        "cache_read_input_tokens": 5694,
+        "cache_creation_input_tokens": 961
+      },
+      "cost_usd": 0.000322,
+      "latency_ms": 4535.6,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8546
+    },
+    {
+      "id": "spider-dev-0736",
+      "db_id": "world_1",
+      "question": "What is the total number of languages used in Aruba?",
+      "gold_sql": "SELECT COUNT(t2.language) FROM country AS t1 JOIN countrylanguage AS t2 ON t1.code = t2.countrycode WHERE t1.name = 'Aruba'",
+      "pred_sql": "SELECT COUNT(*) AS total_languages FROM countrylanguage cl JOIN country c ON c.code = cl.countrycode WHERE c.name = 'Aruba'",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Aruba has 4 languages recorded in the countrylanguage table.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 291,
+        "cache_read_input_tokens": 5690,
+        "cache_creation_input_tokens": 958
+      },
+      "cost_usd": 0.000323,
+      "latency_ms": 4544.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8549
+    },
+    {
+      "id": "spider-dev-0823",
+      "db_id": "orchestra",
+      "question": "Count the number of conductors.",
+      "gold_sql": "SELECT COUNT(*) FROM conductor",
+      "pred_sql": "SELECT COUNT(*) AS conductor_count FROM spider_orchestra.conductor",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "There are 12 conductors.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 217,
+        "cache_read_input_tokens": 5804,
+        "cache_creation_input_tokens": 1015
+      },
+      "cost_usd": 0.000294,
+      "latency_ms": 4242.9,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8502
+    },
+    {
+      "id": "spider-dev-0856",
+      "db_id": "orchestra",
+      "question": "Show the record companies shared by orchestras founded before 2003 and after 2003.",
+      "gold_sql": "SELECT record_company FROM orchestra WHERE year_of_founded < 2003 INTERSECT SELECT record_company FROM orchestra WHERE year_of_founded > 2003",
+      "pred_sql": "SELECT record_company FROM orchestra WHERE year_of_founded < 2003 INTERSECT SELECT record_company FROM orchestra WHERE year_of_founded > 2003",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Only one record company is shared by orchestras founded before 2003 and after 2003: Decca Records (Detroit Symphony Orchestra, founded 2002, and Montreal Symphony Orchestra, founded 2004).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 587,
+        "cache_read_input_tokens": 5838,
+        "cache_creation_input_tokens": 1984
+      },
+      "cost_usd": 0.000601,
+      "latency_ms": 5208.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7456
+    },
+    {
+      "id": "spider-dev-0869",
+      "db_id": "network_1",
+      "question": "Return the grade for the high schooler named Kyle.",
+      "gold_sql": "SELECT grade FROM highschooler WHERE name = 'Kyle'",
+      "pred_sql": "SELECT grade FROM spider_network_1.highschooler WHERE name = 'Kyle'",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Kyle, a high schooler, is in grade 12.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 228,
+        "cache_read_input_tokens": 5607,
+        "cache_creation_input_tokens": 809
+      },
+      "cost_usd": 0.000272,
+      "latency_ms": 4284.3,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8728
+    },
+    {
+      "id": "spider-dev-0899",
+      "db_id": "network_1",
+      "question": "What are the ids of students who both have friends and are liked?",
+      "gold_sql": "SELECT student_id FROM friend INTERSECT SELECT liked_id FROM likes",
+      "pred_sql": "SELECT student_id FROM friend INTERSECT SELECT liked_id FROM likes",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Eight students both have friends and are liked: 1101, 1247, 1304, 1468, 1501, 1689, 1709, and 1934.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 423,
+        "cache_read_input_tokens": 5607,
+        "cache_creation_input_tokens": 1389
+      },
+      "cost_usd": 0.000442,
+      "latency_ms": 4249.1,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8005
+    },
+    {
+      "id": "spider-dev-0977",
+      "db_id": "dog_kennels",
+      "question": "Show me the cost of the most recently performed treatment.",
+      "gold_sql": "SELECT cost_of_treatment FROM treatments ORDER BY date_of_treatment DESC NULLS LAST LIMIT 1",
+      "pred_sql": "SELECT cost_of_treatment FROM spider_dog_kennels.treatments ORDER BY date_of_treatment DESC, treatment_id DESC LIMIT 1",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "The most recently performed treatment (treatment 8, on 2018-03-24 22:25:58) cost 407.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 351,
+        "cache_read_input_tokens": 6426,
+        "cache_creation_input_tokens": 1885
+      },
+      "cost_usd": 0.000476,
+      "latency_ms": 4832.6,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7724
+    },
+    {
+      "id": "spider-dev-0982",
+      "db_id": "dog_kennels",
+      "question": "How many professionals did not operate any treatment on dogs?",
+      "gold_sql": "SELECT COUNT(*) FROM professionals WHERE NOT professional_id IN (SELECT professional_id FROM treatments)",
+      "pred_sql": "SELECT COUNT(*) AS num_professionals FROM professionals p WHERE NOT EXISTS (SELECT 1 FROM treatments t WHERE t.professional_id = p.professional_id)",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "7 professionals have not performed any treatment on dogs. The treatments table records every treatment on a dog, so these are the professionals with no rows in it.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 398,
+        "cache_read_input_tokens": 6428,
+        "cache_creation_input_tokens": 1710
+      },
+      "cost_usd": 0.000478,
+      "latency_ms": 4484.5,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7891
+    },
+    {
+      "id": "spider-dev-1008",
+      "db_id": "singer",
+      "question": "Show the name of singers whose birth year is either 1948 or 1949?",
+      "gold_sql": "SELECT name FROM singer WHERE birth_year = 1948 OR birth_year = 1949",
+      "pred_sql": "SELECT name FROM spider_singer.singer WHERE birth_year IN (1948, 1949)",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Two singers were born in 1948 or 1949: Christy Walton and Alice Walton.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 242,
+        "cache_read_input_tokens": 5509,
+        "cache_creation_input_tokens": 730
+      },
+      "cost_usd": 0.000268,
+      "latency_ms": 4072.0,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8819
+    },
+    {
+      "id": "spider-dev-1023",
+      "db_id": "singer",
+      "question": "What are the names of the singers that have more than one songs?",
+      "gold_sql": "SELECT t1.name FROM singer AS t1 JOIN song AS t2 ON t1.singer_id = t2.singer_id GROUP BY t1.name HAVING COUNT(*) > 1",
+      "pred_sql": "SELECT s.name FROM singer s JOIN song so ON so.singer_id = s.singer_id GROUP BY s.singer_id, s.name HAVING COUNT(*) > 1",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Two singers have more than one song: Christy Walton and Liliane Bettencourt.",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 300,
+        "cache_read_input_tokens": 5495,
+        "cache_creation_input_tokens": 792
+      },
+      "cost_usd": 0.000305,
+      "latency_ms": 5507.5,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.8729
+    },
+    {
+      "id": "spider-dev-1030",
+      "db_id": "real_estate_properties",
+      "question": "How many available features are there in total?",
+      "gold_sql": "SELECT COUNT(*) FROM other_available_features",
+      "pred_sql": "SELECT COUNT(*) AS total_features FROM other_available_features",
+      "correct": true,
+      "reason": "correct",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "There are 3 available features in total (counted from the other_available_features table).",
+      "turns": 3,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 247,
+        "cache_read_input_tokens": 6117,
+        "cache_creation_input_tokens": 1344
+      },
+      "cost_usd": 0.000353,
+      "latency_ms": 3701.8,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.819
+    },
+    {
+      "id": "spider-dev-1033",
+      "db_id": "real_estate_properties",
+      "question": "What are the names of properties that are either houses or apartments with more than 1 room?",
+      "gold_sql": "SELECT property_name FROM properties WHERE property_type_code = 'House' UNION SELECT property_name FROM properties WHERE property_type_code = 'Apartment' AND room_count > 1",
+      "pred_sql": "SELECT property_name FROM spider_real_estate_properties.properties WHERE property_type_code IN ('House', 'Apartment') AND room_count > 1",
+      "correct": false,
+      "reason": "wrong_result",
+      "model": "claude-haiku-5-5",
+      "status": "answered",
+      "answer": "Seven properties are houses or apartments with more than one room: park, parc east, vogue, longacre, renoir, ten tower, and parc coliseum. (\"the cole\" is a house but has only 1 room, so it is excluded.)",
+      "turns": 4,
+      "sql_errors": 0,
+      "guard_rejections": 0,
+      "tool_calls": [
+        "list_schema:ok",
+        "run_query:ok",
+        "run_query:ok",
+        "run_query:ok"
+      ],
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 499,
+        "cache_read_input_tokens": 10002,
+        "cache_creation_input_tokens": 2597
+      },
+      "cost_usd": 0.000675,
+      "latency_ms": 5842.4,
+      "stop_reason": "tool_use",
+      "refusal_category": null,
+      "error": null,
+      "cache_hit_rate": 0.7932
+    }
+  ]
+}

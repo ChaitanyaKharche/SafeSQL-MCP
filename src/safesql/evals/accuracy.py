@@ -19,7 +19,7 @@ from typing import Any
 
 from mcp import Client
 
-from ..agent import SQLAgent
+from ..agent import SQLAgent, cache_hit_rate
 from ..config import Settings
 from ..executor import Executor
 from ..server import build_server
@@ -111,9 +111,13 @@ async def _run(settings: Settings, questions, concurrency: int, total: int, seed
             **{k: v for k, v in result.summary().items() if k not in ("question", "sql")},
         }
 
+    # Tools and system prompt are identical for every question, so write that prefix to the
+    # cache once before the workers start; concurrent requests can't read an entry in flight.
+    async with Client(build_server(next(iter(agent_services.values())))) as client:
+        warm_usage, warm_cost = await SQLAgent(client, model=settings.model, effort=settings.effort).prewarm()
     rows = await asyncio.gather(*(one(q) for q in questions))
     executor.close()
-    return _report(settings, rows, total, seed, time.time() - started)
+    return _report(settings, rows, total, seed, time.time() - started, warm_usage, warm_cost)
 
 
 def _pct(values: list[float], p: float) -> float | None:
@@ -124,7 +128,13 @@ def _pct(values: list[float], p: float) -> float | None:
 
 
 def _report(
-    settings: Settings, rows: list[dict[str, Any]], total: int, seed: int, duration: float
+    settings: Settings,
+    rows: list[dict[str, Any]],
+    total: int,
+    seed: int,
+    duration: float,
+    warm_usage: dict[str, int] | None = None,
+    warm_cost: float = 0.0,
 ) -> dict[str, Any]:
     n = len(rows)
     correct = sum(r["correct"] for r in rows)
@@ -135,6 +145,7 @@ def _report(
         per_db[r["db_id"]][1] += 1
     costs = [r["cost_usd"] for r in rows]
     latencies = [r["latency_ms"] for r in rows]
+    tokens = {k: sum(r["usage"][k] for r in rows) for k in rows[0]["usage"]} if rows else {}
     return {
         "eval": "accuracy",
         "model": settings.model,
@@ -151,8 +162,14 @@ def _report(
         "recovered_after_error": sum(r["correct"] for r in with_errors),
         "guard_rejections": sum(r["guard_rejections"] for r in rows),
         "latency_ms": {"p50": _pct(latencies, 0.5), "p95": _pct(latencies, 0.95)},
-        "cost_usd": {"total": round(sum(costs), 4), "per_question": round(sum(costs) / n, 5) if n else 0},
-        "tokens": {k: sum(r["usage"][k] for r in rows) for k in rows[0]["usage"]} if rows else {},
+        "cost_usd": {
+            "total": round(sum(costs) + warm_cost, 4),
+            "per_question": round(sum(costs) / n, 6) if n else 0,
+            "prewarm": round(warm_cost, 6),
+        },
+        "tokens": tokens,
+        "cache_hit_rate": round(cache_hit_rate(tokens), 4),
+        "prewarm_usage": warm_usage or {},
         "status_counts": {
             s: sum(r["status"] == s for r in rows) for s in sorted({r["status"] for r in rows})
         },
@@ -176,6 +193,7 @@ def markdown(report: dict[str, Any]) -> str:
         f"| questions that hit a SQL error | {report['questions_with_sql_errors']} "
         f"(recovered and correct: {report['recovered_after_error']}) |",
         f"| latency p50 / p95 | {lat['p50']} ms / {lat['p95']} ms |",
-        f"| cost per question | ${cost['per_question']:.4f} (total ${cost['total']:.2f}) |",
+        f"| prompt tokens served from cache | {report['cache_hit_rate']:.1%} |",
+        f"| cost per question | ${cost['per_question']:.5f} (total ${cost['total']:.4f}) |",
     ]
     return "\n".join(lines) + "\n"

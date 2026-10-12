@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      SAFESQL_MODEL: ${{ vars.SAFESQL_MODEL || 'claude-opus-5-5' }}
+      SAFESQL_MODEL: claude-haiku-5-5  # pinned: a full LLM gate run costs about 2-3 cents
       SAFESQL_EFFORT: ${{ vars.SAFESQL_EFFORT || 'medium' }}
       ACCURACY_LIMIT: ${{ inputs.accuracy_limit || vars.ACCURACY_LIMIT || '40' }}
     services:
@@ -146,6 +146,11 @@ jobs:
         run: |
           pip install -e .
           safesql setup-db --load evals/fixtures/spider_dev.sql.gz
+      - name: Live API tests (prompt caching standing check)
+        if: steps.key.outputs.available == 'true'
+        run: |
+          pip install pytest
+          pytest -q -m llm
       - name: Accuracy eval
         if: steps.key.outputs.available == 'true'
         run: safesql eval accuracy --limit "$ACCURACY_LIMIT" --out ci-reports/accuracy.json

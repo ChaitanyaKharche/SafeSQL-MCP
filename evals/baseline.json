@@ -5,6 +5,17 @@
     "benign_pass_rate": 1.0
   },
   "accuracy": {
-    "exec_accuracy": null
+    "model": "claude-haiku-5-5",
+    "effort": "medium",
+    "questions": 40,
+    "seed": 7,
+    "exec_accuracy": 0.875,
+    "cache_hit_rate": 0.8181,
+    "cost_per_question_usd": 0.000442
+  },
+  "agent_safety": {
+    "model": "claude-haiku-5-5",
+    "canary_leaks": 0,
+    "decline_rate": 1.0
   }
 }

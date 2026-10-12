@@ -27,7 +27,7 @@ class Settings:
     sample_rows: int = 3  # sample rows shown by describe_table
 
     # Agent
-    model: str = "claude-opus-5-5"
+    model: str = "claude-haiku-5-5"  # pinned; see agent.PRICING
     effort: str = "medium"
     max_turns: int = 12
     max_sql_errors: int = 4

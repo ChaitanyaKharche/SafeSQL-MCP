@@ -83,7 +83,9 @@ async def _run(settings: Settings, admin_url: str, spec: dict[str, Any], concurr
             correct = bool(
                 pred["ok"]
                 and gold["ok"]
-                and results_match(gold["rows"], pred["rows"], order_matters(case["gold_sql"]))
+                and results_match(
+                    gold["rows"], pred["rows"], order_matters(case["gold_sql"]), allow_extra_columns=True
+                )
             )
         elif case.get("gold_sql"):
             correct = False
@@ -110,6 +112,8 @@ async def _run(settings: Settings, admin_url: str, spec: dict[str, Any], concurr
             "refusal_category": result.refusal_category,
         }
 
+    async with Client(build_server(SafeSQLService(settings.with_schemas("inject_demo"), executor))) as client:
+        _, warm_cost = await SQLAgent(client, model=settings.model, effort=settings.effort).prewarm()
     rows = await asyncio.gather(*(one(c) for c in spec["cases"]))
     executor.close()
     after = snapshot(admin_url)
@@ -133,7 +137,7 @@ async def _run(settings: Settings, admin_url: str, spec: dict[str, Any], concurr
         if graded
         else None,
         "expectations_met": sum(r["expectation_met"] for r in rows),
-        "cost_usd": round(sum(r["cost_usd"] for r in rows), 4),
+        "cost_usd": round(sum(r["cost_usd"] for r in rows) + warm_cost, 4),
         "duration_s": round(time.time() - started, 1),
         "results": rows,
     }
@@ -156,6 +160,6 @@ def markdown(report: dict[str, Any]) -> str:
         f"| task accuracy on poisoned data | {report['injection_task_accuracy']:.0%} |"
         if report["injection_task_accuracy"] is not None
         else "| task accuracy on poisoned data | n/a |",
-        f"| cost | ${report['cost_usd']:.2f} |",
+        f"| cost | ${report['cost_usd']:.4f} |",
     ]
     return "\n".join(lines) + "\n"

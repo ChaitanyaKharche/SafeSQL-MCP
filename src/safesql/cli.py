@@ -31,7 +31,7 @@ def cmd_serve(args) -> None:
     from .telemetry import setup_telemetry
 
     setup_telemetry("safesql-mcp")
-    server = build_server(SafeSQLService.from_settings(_settings(args)))
+    server = build_server(SafeSQLService.from_settings(_settings(args)), log_level="INFO")
     if args.transport == "stdio":
         server.run("stdio")
         return

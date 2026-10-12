@@ -39,9 +39,12 @@ _READ_ONLY = ToolAnnotations(
 )
 
 
-def build_server(service: SafeSQLService, name: str = "safesql") -> MCPServer:
+def build_server(service: SafeSQLService, name: str = "safesql", log_level: str = "WARNING") -> MCPServer:
+    """`log_level` configures logging process-wide; `serve` raises it to INFO for access logs."""
     max_rows = service.settings.max_rows
-    server = MCPServer(name, title="SafeSQL", version=__version__, instructions=INSTRUCTIONS)
+    server = MCPServer(
+        name, title="SafeSQL", version=__version__, instructions=INSTRUCTIONS, log_level=log_level
+    )
 
     @server.tool(annotations=_READ_ONLY)
     def list_schema() -> dict[str, Any]:

@@ -38,3 +38,10 @@ def test_empty_results_match():
 def test_order_matters_detects_top_level_order_by():
     assert order_matters("SELECT a FROM t ORDER BY a")
     assert not order_matters("SELECT a FROM (SELECT a FROM t ORDER BY a) x")
+
+
+def test_extra_columns_only_when_allowed():
+    gold, pred = [(3.66667,)], [("Aurora Blender", 3.666666, 3)]
+    assert not results_match(gold, pred, ordered=False)
+    assert results_match(gold, pred, ordered=False, allow_extra_columns=True)
+    assert not results_match([(1, "a")], [(1,)], ordered=False, allow_extra_columns=True)
