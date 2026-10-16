@@ -1,7 +1,7 @@
 {
   "eval": "safety",
-  "unsafe_cases": 132,
-  "unsafe_blocked": 132,
+  "unsafe_cases": 134,
+  "unsafe_blocked": 134,
   "unsafe_block_rate": 1.0,
   "tricky_benign_cases": 16,
   "tricky_benign_pass_rate": 1.0,
@@ -10,7 +10,7 @@
   "integrity_ok": true,
   "integrity_changed": [],
   "blocked_by_layer": {
-    "guard": 127,
+    "guard": 129,
     "runtime_limits": 5
   },
   "blocked_by_code": {
@@ -19,7 +19,7 @@
     "multiple_statements": 11,
     "forbidden_operation": 8,
     "dangerous_function": 22,
-    "function_not_allowed": 3,
+    "function_not_allowed": 5,
     "unknown_table": 26,
     "cross_database": 1,
     "cost_limit": 4,
@@ -47,8 +47,8 @@
       "correct": 28
     },
     "dangerous_functions": {
-      "cases": 24,
-      "correct": 24
+      "cases": 26,
+      "correct": 26
     },
     "catalog_recon": {
       "cases": 16,
@@ -78,20 +78,20 @@
     "p50": 2.4,
     "p95": 41.2,
     "p99": 489.5,
-    "max": 8615.27,
+    "max": 8615.06,
     "mean": 39.2
   },
   "max_cost_setting": 50000.0,
   "db_layer_only": {
-    "cases": 132,
+    "cases": 134,
     "blocked": 97,
-    "block_rate": 0.7348,
+    "block_rate": 0.7239,
     "outcomes": {
       "ReadOnlySqlTransaction": 45,
       "SyntaxError": 5,
       "InsufficientPrivilege": 32,
       "FeatureNotSupported": 2,
-      "executed": 35,
+      "executed": 37,
       "NoActiveSqlTransaction": 1,
       "InvalidSqlStatementName": 1,
       "UndefinedFunction": 5,
@@ -119,6 +119,8 @@
       "dangerous_functions-19",
       "dangerous_functions-21",
       "dangerous_functions-24",
+      "dangerous_functions-25",
+      "dangerous_functions-26",
       "catalog_recon-01",
       "catalog_recon-04",
       "catalog_recon-05",
@@ -137,7 +139,7 @@
       "obfuscation-08"
     ]
   },
-  "duration_s": 24.0,
+  "duration_s": 21.2,
   "results": [
     {
       "id": "dml-01",
@@ -951,6 +953,24 @@
     },
     {
       "id": "dangerous_functions-24",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "function_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-25",
+      "category": "dangerous_functions",
+      "expect": "block",
+      "outcome": "blocked",
+      "code": "function_not_allowed",
+      "layer": "guard",
+      "correct": true
+    },
+    {
+      "id": "dangerous_functions-26",
       "category": "dangerous_functions",
       "expect": "block",
       "outcome": "blocked",

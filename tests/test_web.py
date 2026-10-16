@@ -48,7 +48,7 @@ def test_config_lists_granted_schemas_and_the_attack_corpus(demo):
     data = body(resp)
     assert status == 200
     assert [s["name"] for s in data["schemas"]] == ["spider_concert_singer", "inject_demo"]
-    assert len(data["attacks"]) == 132 and data["tricky"]
+    assert len(data["attacks"]) == 134 and data["tricky"]
     assert data["agent"]["enabled"] is False
 
 

@@ -68,7 +68,7 @@ jobs:
           cache: pip
       - run: pip install -e .
       - run: safesql setup-db --load evals/fixtures/spider_dev.sql.gz
-      - name: Safety eval (132 attacks, 864 benign golden queries, integrity check)
+      - name: Safety eval (134 attacks, 864 benign golden queries, integrity check)
         run: safesql eval safety --out ci-reports/safety.json
       - name: Gate
         run: safesql eval gate --reports ci-reports --require safety
@@ -126,7 +126,7 @@ jobs:
           docker run -d --name space -p 7860:7860 safesql-space
           for i in $(seq 1 30); do curl -sf localhost:7860/healthz && break; sleep 2; done
           curl -sf localhost:7860/ | grep -q "try to break it"
-          curl -sf localhost:7860/api/config | python3 -c "import json,sys; d=json.load(sys.stdin); assert len(d['attacks']) == 132, d"
+          curl -sf localhost:7860/api/config | python3 -c "import json,sys; d=json.load(sys.stdin); assert len(d['attacks']) == 134, d"
           curl -sf -X POST localhost:7860/api/query -H 'content-type: application/json'             -d '{"schema":"spider_concert_singer","sql":"DROP TABLE singer"}' | grep -q statement_not_allowed
       - name: Logs
         if: failure()

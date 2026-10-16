@@ -81,10 +81,11 @@ ALLOWED_FUNCTIONS = frozenset(
     {
         # syntax that renders as a call
         "cast", "extract", "row", "exists", "any", "all", "some", "array",
-        # string (repeat/lpad/rpad are left out: one cheap call can build a huge string)
+        # string (repeat/lpad/rpad/format are left out: one cheap call can build a huge
+        # string, and format pads to any width, e.g. format('%100000000s', ''))
         "initcap", "btrim", "ltrim", "rtrim", "split_part", "strpos",
         "translate", "replace", "reverse", "left", "right", "concat", "concat_ws",
-        "format", "char_length", "character_length", "octet_length", "length", "ascii",
+        "char_length", "character_length", "octet_length", "length", "ascii",
         "chr", "md5", "to_hex", "regexp_replace", "regexp_match", "regexp_matches",
         "regexp_split_to_array", "regexp_count", "regexp_like", "starts_with", "overlay",
         "position", "substr", "substring", "lower", "upper", "trim",

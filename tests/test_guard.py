@@ -115,6 +115,8 @@ def test_records_referenced_tables(guard):
         ("SELECT version()", "dangerous_function"),
         ("SELECT current_user", "dangerous_function"),
         ("SELECT repeat('x', 100000000)", "function_not_allowed"),
+        ("SELECT format('%100000000s', '')", "function_not_allowed"),
+        ("SELECT format('%*s', 100000000, '')", "function_not_allowed"),
         ("SELECT my_udf(1)", "function_not_allowed"),
         ("SELECT * FROM pg_user", "unknown_table"),
         ("SELECT * FROM information_schema.tables", "unknown_table"),

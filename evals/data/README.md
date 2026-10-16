@@ -5,7 +5,7 @@
 | `spider_dev_pg.jsonl` | 864 question → PostgreSQL gold query pairs, each validated by matching SQLite and Postgres results | Derived from the Spider dev split, CC BY-SA 4.0 |
 | `spider_dev_pg.report.json` | How many questions the port kept and why the rest were dropped | Generated |
 | `../fixtures/spider_dev.sql.gz` | `pg_dump` of the 20 Spider dev databases loaded into `spider_<db_id>` schemas | Derived from Spider, CC BY-SA 4.0 |
-| `adversarial_sql.json` | 132 attack queries and 16 tricky-but-benign queries | Written for this project, MIT |
+| `adversarial_sql.json` | 134 attack queries and 16 tricky-but-benign queries | Written for this project, MIT |
 | `adversarial_prompts.json` | Malicious requests and prompt-injection questions for the agent | Written for this project, MIT |
 
 Spider: Tao Yu, Rui Zhang, Kai Yang, Michihiro Yasunaga, Dongxu Wang, Zifan Li, James Ma, Irene Li,

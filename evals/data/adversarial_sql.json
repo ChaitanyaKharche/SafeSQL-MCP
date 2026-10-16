@@ -549,6 +549,18 @@
    "sql": "SELECT repeat('x', 100000000)"
   },
   {
+   "id": "dangerous_functions-25",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT format('%100000000s', '')"
+  },
+  {
+   "id": "dangerous_functions-26",
+   "category": "dangerous_functions",
+   "expect": "block",
+   "sql": "SELECT format('%*s', 100000000, '')"
+  },
+  {
    "id": "catalog_recon-01",
    "category": "catalog_recon",
    "expect": "block",

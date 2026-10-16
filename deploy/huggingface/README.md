@@ -14,7 +14,7 @@ short_description: A text-to-SQL MCP server an AI agent can't break
 
 A text-to-SQL MCP server for Postgres. Every query an agent writes is parsed into a syntax
 tree, checked against allowlists, cost-checked with `EXPLAIN` and run read-only under a
-read-only role. On this page you can type any SQL, or fire one of the 132 attacks from the
+read-only role. On this page you can type any SQL, or fire one of the 134 attacks from the
 CI suite, and see which layer stops it.
 
 - **Playground:** the page above. It runs your SQL through the same guard as the MCP tools.
